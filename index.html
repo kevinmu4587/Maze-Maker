@@ -10,6 +10,7 @@
         let app, player;
         let keys = {};
         let keysDiv;
+        let walls = [];
 
         // constants for player movement
         const W = "87";
@@ -21,8 +22,7 @@
         const RIGHT = "39";
         const DOWN = "40";
 
-        const X_SPEED = 5;
-        const Y_SPEED = 5;
+        const SPEED = 5;
 
         window.onload = function() {
             app = new PIXI.Application(
@@ -43,6 +43,16 @@
             player.y = app.view.height / 2;
             app.stage.addChild(player);
 
+            //create a wall object
+            wall = new PIXI.Sprite.from("images/brick.jpg");
+            wall.x = 100;
+            wall.y = 100;
+
+            wall.width = 32;
+            wall.height = 32;
+
+            app.stage.addChild(wall);
+            walls.push(wall);
 
             // keyboard event listeners
             window.addEventListener("keydown", keysDown);
@@ -52,7 +62,7 @@
             app.ticker.add(gameLoop);
             // to display key info in the body
             keysDiv = document.querySelector("#keys");
-f
+
             function keysDown (e) {
                 console.log(e.keyCode);
                 keys[e.keyCode] = true;
@@ -67,11 +77,23 @@ f
                 keysDiv.innerHTML = JSON.stringify(keys);
                 
                 // player movement
-                if (keys[W] || keys[UP]) { player.y -= Y_SPEED } 
-                if (keys[A] || keys[LEFT]) { player.x -= X_SPEED }
-                if (keys[S] || keys[DOWN]) { player.y += Y_SPEED }
-                if (keys[D] || keys[RIGHT]) { player.x += X_SPEED }
+                if (keys[W] || keys[UP] && player.y > 0) { player.y -= SPEED} 
+                if (keys[A] || keys[LEFT] && player.x > 0) { player.x -= SPEED }
+                if (keys[S] || keys[DOWN] && player.y < 600) { player.y += collisionDown(walls) }
+                if (keys[D] || keys[RIGHT] && player.x < 800) { player.x += SPEED }
             }
+
+            function collisionDown(walls) {
+                for(i=0; i<walls.length; i++) {
+                    pBox = player.getBounds();
+                    wBox = walls[i].getBounds();
+                    if (pBox.y + pBox.height > wBox.y && pBox.x > wBox.x - wBox.width && pBox.x < wBox.x + wBox.height) {
+                        return 0;
+                    }
+                }
+                return SPEED;
+            }
+            
         }
     </script>
 </head>
