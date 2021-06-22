@@ -77,23 +77,55 @@
                 keysDiv.innerHTML = JSON.stringify(keys);
                 
                 // player movement
-                if (keys[W] || keys[UP] && player.y > 0) { player.y -= SPEED} 
-                if (keys[A] || keys[LEFT] && player.x > 0) { player.x -= SPEED }
+                if (keys[W] || keys[UP] && player.y > 0) { player.y -= collisionUp(walls)} 
+                if (keys[A] || keys[LEFT] && player.x > 0) { player.x -= collisionLeft(walls) }
                 if (keys[S] || keys[DOWN] && player.y < 600) { player.y += collisionDown(walls) }
-                if (keys[D] || keys[RIGHT] && player.x < 800) { player.x += SPEED }
+                if (keys[D] || keys[RIGHT] && player.x < 800) { player.x += collisionRight(walls) }
             }
 
             function collisionDown(walls) {
                 for(i=0; i<walls.length; i++) {
                     pBox = player.getBounds();
                     wBox = walls[i].getBounds();
-                    if (pBox.y + pBox.height > wBox.y && pBox.x > wBox.x - wBox.width && pBox.x < wBox.x + wBox.height) {
+                    if (pBox.y + pBox.height == wBox.y && pBox.x > wBox.x - wBox.width && pBox.x < wBox.x + wBox.width) {
+                        return 0;
+                    }
+                }
+                return SPEED;
+            } 
+
+            function collisionUp(walls) {
+                for(i=0; i<walls.length; i++) {
+                    pBox = player.getBounds();
+                    wBox = walls[i].getBounds();
+                    if (pBox.y - pBox.height == wBox.y && pBox.x > wBox.x - wBox.width && pBox.x < wBox.x + wBox.width) {
                         return 0;
                     }
                 }
                 return SPEED;
             }
-            
+
+            function collisionLeft(walls) {
+                for(i=0; i<walls.length; i++) {
+                    pBox = player.getBounds();
+                    wBox = walls[i].getBounds();
+                    if (pBox.x - pBox.width < wBox.x && pBox.x > wBox.x && pBox.y > wBox.y - wBox.height && pBox.y < wBox.y + wBox.height) {
+                        return 0;
+                    }
+                }
+                return SPEED;
+            }
+
+            function collisionRight(walls) {
+                for(i=0; i<walls.length; i++) {
+                    pBox = player.getBounds();
+                    wBox = walls[i].getBounds();
+                    if (pBox.x + pBox.width > wBox.x && pBox.y > wBox.y - wBox.height && pBox.y < wBox.y + wBox.height) {
+                        return 0;
+                    }
+                }
+                return SPEED;
+            }
         }
     </script>
 </head>
