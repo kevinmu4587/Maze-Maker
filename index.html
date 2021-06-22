@@ -40,19 +40,38 @@
             player.anchor.set(0.5); // set to center
             // set player position
             player.x = app.view.width / 2;
-            player.y = app.view.height / 2;
+            player.y = app.view.height - 32;
             app.stage.addChild(player);
 
-            //create a wall object
-            wall = new PIXI.Sprite.from("images/brick.jpg");
-            wall.x = 100;
-            wall.y = 100;
+            // set up an array of walls
+            for(i=0; i < 20; i++) {
+                wall = new PIXI.Sprite.from("images/brick.jpg");
+                wall.x = app.view.width / 2 + 32;
+                wall.y = app.view.height - (i+1) * 32;
+                wall.width = 32;
+                wall.height = 32;
+                app.stage.addChild(wall);
+                walls.push(wall);
+            }
 
-            wall.width = 32;
-            wall.height = 32;
+            for(i=0; i < 20; i++) {
+                wall = new PIXI.Sprite.from("images/brick.jpg");
+                wall.x = app.view.width / 2 - 64;
+                wall.y = app.view.height - (i+1) * 32;
+                wall.width = 32;
+                wall.height = 32;
+                app.stage.addChild(wall);
+                walls.push(wall);
+            }
 
-            app.stage.addChild(wall);
-            walls.push(wall);
+            // set the finish
+            finish = new PIXI.Sprite.from("images/finish.png");
+            finish.x = app.view.width / 2 - 10;
+            finish.y = 0;
+            finish.width = 32;
+            finish.height = 32;
+            app.stage.addChild(finish);
+            fBox = finish.getBounds();
 
             // keyboard event listeners
             window.addEventListener("keydown", keysDown);
@@ -75,6 +94,21 @@
 
             function gameLoop() {
                 keysDiv.innerHTML = JSON.stringify(keys);
+                pBox = player.getBounds();
+                // check if finished
+                /*
+                console.log("pBox.x", pBox.x);
+                console.log("pBox.y", pBox.y);
+                console.log("fBox.x", fBox.x);
+                console.log("fBox.y", fBox.y);
+                */
+                if(pBox.x + pBox.width > fBox.x && pBox.y + pBox.height < fBox.y + fBox.height) {
+                    console.log("FINSIH")
+                    win = new PIXI.Sprite.from("images/winMsg.png");
+                    win.x = 0;
+                    win.y = 0;
+                    app.stage.addChild(win);
+                }
                 
                 // player movement
                 if (keys[W] || keys[UP] && player.y > 0) { player.y -= collisionUp(walls)} 
