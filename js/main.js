@@ -1,3 +1,5 @@
+import { Maze, naive_solve_maze } from "./maze_naive_solve.js";
+
 let app, player;
 let keys = {};
 let keysDiv;
@@ -35,16 +37,36 @@ const TILE_START = 4;
 
 // 2D array of tiles
 let tiles = [
-    [1, 3, 0, 3, 1],
-    [1, 1, 0, 0, 1],
-    [1, 1, 0, 0, 0],
-    [0, 0, 1, 0, 0],
-    [0, 0, 0, 0, 1]
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
+    [1, 'S', 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1], 
+    [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1], 
+    [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1], 
+    [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1], 
+    [1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1], 
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1], 
+    [1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1], 
+    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 'E', 1], 
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
+
+let maze = new Maze();
+maze.set_maze(tiles);
+console.log(maze.get_maze_array());
+
+let solved_maze = naive_solve_maze(maze, DOWN);
+console.log("done solving maze");
+
+for(i=0; i < 5; i++) {
+    for(j=0; j < 5; j++) {
+        console.log(solved_maze[i][j], " ");
+    }
+    console.log("");
+}
 
 // render(): renders the current board and player
 //           uses global variable tiles[][]
-render = function() {
+function render() {
     for (i=0; i < NUM_TILES_Y; i++) {
         for (j=0; j < NUM_TILES_X; j++) {
             if (tiles[i][j] == TILE_OPEN) {
@@ -94,38 +116,6 @@ window.onload = function() {
     app.stage.addChild(player);
     render();
 
-    /*
-    for(i=0; i < 20; i++) {
-        wall = new PIXI.Sprite.from("images/brick.jpg");
-        wall.x = app.view.width / 2 + 32;
-        wall.y = app.view.height - (i+1) * 32;
-        wall.width = 32;
-        wall.height = 32;
-        app.stage.addChild(wall);
-        walls.push(wall);
-    }
-
-
-    for(i=0; i < 20; i++) {
-        wall = new PIXI.Sprite.from("images/brick.jpg");
-        wall.x = app.view.width / 2 - 64;
-        wall.y = app.view.height - (i+1) * 32;
-        wall.width = 32;
-        wall.height = 32;
-        app.stage.addChild(wall);
-        walls.push(wall);
-    }
-    */
-
-    // // set the finish
-    // finish = new PIXI.Sprite.from("images/finish.png");
-    // finish.x = PIXEL_WIDTH / 2;
-    // finish.y = 0;
-    // finish.width = TILE_WIDTH;
-    // finish.height = TILE_HEIGHT;
-    // app.stage.addChild(finish);
-    // fBox = finish.getBounds();
-
     // keyboard event listeners
     window.addEventListener("keydown", keypress);
     window.addEventListener("keyup", keysUp);
@@ -158,26 +148,6 @@ window.onload = function() {
     function gameLoop() {
         keysDiv.innerHTML = JSON.stringify(keys);
         pBox = player.getBounds();
-        // check if finished
-        /*
-        console.log("pBox.x", pBox.x);
-        console.log("pBox.y", pBox.y);
-        console.log("fBox.x", fBox.x);
-        console.log("fBox.y", fBox.y);
-        */
-        // if(pBox.x + pBox.width > fBox.x && pBox.y + pBox.height < fBox.y + fBox.height) {
-        //     console.log("FINSIH")
-        //     win = new PIXI.Sprite.from("images/winMsg.png");
-        //     win.x = 0;
-        //     win.y = 0;
-        //     app.stage.addChild(win);
-        // }
-        
-        // player movement
-        // if (keys[W] || keys[UP] && player.y > 0) { player.y -= collisionUp(); } 
-        // if (keys[A] || keys[LEFT] && player.x > 0) { player.x -= collisionLeft(); }
-        // if (keys[S] || keys[DOWN] && player.y + (TILE_WIDTH / 2) < PIXEL_HEIGHT) { player.y += collisionDown(); }
-        // if (keys[D] || keys[RIGHT] && player.x < PIXEL_WIDTH) { player.x += collisionRight(); }
     }
 
     // getTile(px, py): returns the value of the tile at pixel coordinates px and py

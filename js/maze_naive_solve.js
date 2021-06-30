@@ -26,8 +26,8 @@ class Maze {
         this.maze_array = maze_array;
         for (var y = 0; y < maze_array.length; ++y) {
           if (maze_array[y].includes('S')) {
-            set_y(y);
-            set_x(maze_array[y].indexOf('S'));
+            this.set_y(y);
+            this.set_x(maze_array[y].indexOf('S'));
           }
         }
     }
@@ -78,7 +78,7 @@ class Maze {
 function naive_solve_maze(maze, initial_direction = DOWN) {
     // note: please start character at top of maze, near upper wall for now bc of initial_direction
     var direction = initial_direction;
-    var ret_maze_array = maze.get_maze();
+    var ret_maze_array = maze.get_maze_array();
     var original_x = maze.get_x();
     var original_y = maze.get_y();
     while (! maze.finished()) {
@@ -113,6 +113,16 @@ const eg1 =
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
 
-//var sampleMaze = new Maze();
-//sampleMaze.set_maze(eg1);
-//naive_solve_maze(sampleMaze, UP);
+const eg2 = [
+    [1, 'S', 0, 0, 1],
+    [1, 1, 0, 0, 1],
+    [1, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 0, 'E', 1]
+];
+
+export { Maze, naive_solve_maze };
+
+var sampleMaze = new Maze();
+sampleMaze.set_maze(eg2);
+naive_solve_maze(sampleMaze, DOWN);
