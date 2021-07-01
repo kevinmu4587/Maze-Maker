@@ -24,16 +24,12 @@ const SPEED = TILE_WIDTH;
 const TILE_OPEN = 0;
 const TILE_WALL = 1;
 const TILE_SOLUTION = 2;
-const TILE_FINISH = 3;
-const TILE_START = 4;
-// 0 . open 
-// 1 wall
-// 2 solution
-// 3 finish
+const TILE_FINISH = 'E';
+const TILE_START = 'S';
 
 // 2D array of tiles
 let tiles = [
-    [1, 3, 0, 3, 1],
+    [1, 1, 0, 'E', 1],
     [1, 1, 0, 0, 1],
     [1, 1, 0, 0, 0],
     [0, 0, 1, 0, 0],
@@ -73,7 +69,7 @@ render = function() {
 window.onload = function() {
     app = new PIXI.Application(
         {
-            width: PIXEL_WIDTH,
+            width: PIXEL_WIDTH + 800,
             height: PIXEL_HEIGHT,
             backgroundColor: GAME_COLOR
         }
@@ -90,13 +86,48 @@ window.onload = function() {
     player.width = TILE_WIDTH;
     player.height = TILE_HEIGHT;
     app.stage.addChild(player);
+    menu = new PIXI.Sprite.from(PIXI.Texture.WHITE);
+    menu.tint = 0xFF0000;
+    menu.position.set(PIXEL_WIDTH, 0);
+    menu.width = 10;
+    menu.height = PIXEL_HEIGHT;
+    app.stage.addChild(menu);
+
+    draw = new PIXI.Sprite.from(PIXI.Texture.WHITE);
+    draw.tint = 0x00FF00;
+    draw.position.set(PIXEL_WIDTH + 50, PIXEL_HEIGHT / 3);
+    draw.interactive = true;
+    draw.on('mousedown', edit);
+    draw.width = 100;
+    draw.height = 50;
+    app.stage.addChild(draw);
     render();
 
+    function gameLoop() {
+    }
+}
+function edit() {
+    console.log("drawing");
+}
+
+function saveMaze() {
+    console.log("saving maze:");
+    console.log(JSON.stringify(tiles));
+    
+}
+
+function loadMaze() {
+    console.log("load maze:");
+    // 
+}
+
+function play() {
+    console.log("player start:");
+    document.getElementById("playButton").value="Edit";
     // keyboard event listeners
     window.addEventListener("keyup", keysUp);
-
     // ticker to call gameLoop function during Pixi eventhandler
-    app.ticker.add(gameLoop);
+    //app.ticker.add(gameLoop);
 
     function keysUp (e) {
         key = e.keyCode;
@@ -111,45 +142,46 @@ window.onload = function() {
             player.y += collision(player.x, player.y + TILE_WIDTH / 2);
         }
     }
+}
 
-    function gameLoop() {
-    }
+function solveMaze() {
+    console.log("solving maze:");
+}
 
-    // getTile(px, py): returns the value of the tile at pixel coordinates px and py
-    function getTile(px, py) {
-        tx = Math.floor(px / TILE_WIDTH);
-        ty = Math.floor(py / TILE_HEIGHT); 
-        return [tx, ty];
+function collision(targetX, targetY) {
+    targetTile = getTile(targetX, targetY);
+    tx = targetTile[0];
+    ty = targetTile[1];
+    // console.log("tx: " + tx);
+    // console.log("ty: " + ty);
+    if (tx < 0 || tx >= NUM_TILES_X || ty < 0 || ty >= NUM_TILES_Y) {
+        console.log("trying to move outside the board");
+        return 0;
+    } else if (tiles[ty][tx] == TILE_WALL) {
+        console.log("trying to move into a wall");
+        return 0;
+    } else if (tiles[ty][tx] == TILE_FINISH) {
+        victory();
+        console.log("victory!");
+        return SPEED;
+    } else {
+        console.log("moving...");
+        return SPEED;
     }
+}
 
-    function victory() {
-        win = new PIXI.Sprite.from("images/winMsg.png");
-        win.x = 0;
-        win.y = 0;
-        win.width = PIXEL_WIDTH;
-        win.height = PIXEL_HEIGHT;
-        app.stage.addChild(win);
-    }
+// getTile(px, py): returns the value of the tile at pixel coordinates px and py
+function getTile(px, py) {
+    tx = Math.floor(px / TILE_WIDTH);
+    ty = Math.floor(py / TILE_HEIGHT); 
+    return [tx, ty];
+}
 
-    function collision(targetX, targetY) {
-        targetTile = getTile(targetX, targetY);
-        tx = targetTile[0];
-        ty = targetTile[1];
-        // console.log("tx: " + tx);
-        // console.log("ty: " + ty);
-        if (tx < 0 || tx >= NUM_TILES_X || ty < 0 || ty >= NUM_TILES_Y) {
-            console.log("trying to move outside the board");
-            return 0;
-        } else if (tiles[ty][tx] == TILE_WALL) {
-            console.log("trying to move into a wall");
-            return 0;
-        } else if (tiles[ty][tx] == TILE_FINISH) {
-            victory();
-            console.log("victory!");
-            return SPEED;
-        } else {
-            console.log("moving...");
-            return SPEED;
-        }
-    }
+function victory() {
+    win = new PIXI.Sprite.from("images/winMsg.png");
+    win.x = 0;
+    win.y = 0;
+    win.width = PIXEL_WIDTH;
+    win.height = PIXEL_HEIGHT;
+    app.stage.addChild(win);
 }

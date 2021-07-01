@@ -5,6 +5,8 @@ const app = express()
 
 app.get('/', (req,res) => {
     res.sendFile(path.resolve(__dirname, 'index.html'))
+    res.send("Hello world!");
+    res.render("loadJson", "[[1,1,0,'E',1],[1,1,0,0,1],[1,1,0,0,0],[0,0,1,0,0],[0,0,0,0,1]]");
 })
 
 app.all('*', (req,res) => {
