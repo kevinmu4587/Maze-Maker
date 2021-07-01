@@ -1,10 +1,17 @@
-const express = require('express')
-const path = require('path')
+const express = require('express');
+const path = require('path');
 
-const app = express()
+const app = express();
+
+app.use(express.static(__dirname + '/'));
+app.engine('html', require('ejs').renderFile);
+
+app.set('view engine', 'ejs');
+app.set('views', __dirname);
 
 app.get('/', (req,res) => {
-    res.sendFile(path.resolve(__dirname, 'index.html'))
+    res.render("index", 
+    {'maze' : "[[1,1,0,'E',1],[1,1,0,0,1],[1,1,0,0,0],[0,0,1,0,0],[0,0,0,0,1]]"});
 })
 
 app.all('*', (req,res) => {
@@ -13,4 +20,7 @@ app.all('*', (req,res) => {
 
 app.listen(5000, () => {
     console.log('server is running on port 5000')
+})
+
+app.post('/save', (req,res) => {
 })
