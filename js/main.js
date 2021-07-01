@@ -57,8 +57,8 @@ console.log(maze.get_maze_array());
 let solved_maze = naive_solve_maze(maze, DOWN);
 console.log("done solving maze");
 
-for(i=0; i < 5; i++) {
-    for(j=0; j < 5; j++) {
+for(var i=0; i < 5; i++) {
+    for(var j=0; j < 5; j++) {
         console.log(solved_maze[i][j], " ");
     }
     console.log("");

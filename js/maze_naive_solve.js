@@ -77,7 +77,7 @@ class Maze {
 
 function naive_solve_maze(maze, initial_direction = DOWN) {
     // note: please start character at top of maze, near upper wall for now bc of initial_direction
-    var direction = initial_direction;
+    var direction = parseInt(initial_direction);
     var ret_maze_array = maze.get_maze_array();
     var original_x = maze.get_x();
     var original_y = maze.get_y();
@@ -122,7 +122,8 @@ const eg2 = [
 ];
 
 export { Maze, naive_solve_maze };
-
+/*
 var sampleMaze = new Maze();
 sampleMaze.set_maze(eg2);
 naive_solve_maze(sampleMaze, DOWN);
+*/
