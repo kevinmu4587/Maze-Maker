@@ -1,8 +1,6 @@
 import { Maze, naive_solve_maze } from "./maze_naive_solve.js";
 
 let app, player;
-let keys = {};
-let keysDiv;
 let walls = [];
 
 // constants for player movement
@@ -30,6 +28,7 @@ const TILE_WALL = 1;
 const TILE_SOLUTION = 2;
 const TILE_FINISH = 'E';
 const TILE_START = 'S';
+
 // 0 . open 
 // 1 wall
 // 2 solution
@@ -48,6 +47,7 @@ let tiles = [
     [1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1], 
     [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 'E', 1], 
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
 ];
 
 let maze = new Maze();
@@ -105,7 +105,7 @@ function render() {
 window.onload = function() {
     app = new PIXI.Application(
         {
-            width: PIXEL_WIDTH,
+            width: PIXEL_WIDTH + 800,
             height: PIXEL_HEIGHT,
             backgroundColor: GAME_COLOR
         }
@@ -125,32 +125,60 @@ window.onload = function() {
     app.stage.addChild(player);
     */
     render();
+    menu = new PIXI.Sprite.from(PIXI.Texture.WHITE);
+    menu.tint = 0xFF0000;
+    menu.position.set(PIXEL_WIDTH, 0);
+    menu.width = 10;
+    menu.height = PIXEL_HEIGHT;
+    app.stage.addChild(menu);
 
-    // keyboard event listeners
-    window.addEventListener("keydown", keypress);
-    window.addEventListener("keyup", keysUp);
+    draw = new PIXI.Sprite.from(PIXI.Texture.WHITE);
+    draw.tint = 0x00FF00;
+    draw.position.set(PIXEL_WIDTH + 50, PIXEL_HEIGHT / 3);
+    draw.interactive = true;
+    draw.on('mousedown', edit);
+    draw.width = 100;
+    draw.height = 50;
+    app.stage.addChild(draw);
+    render();
 
-    // ticker to call gameLoop function during Pixi eventhandler
-    app.ticker.add(gameLoop);
-    // to display key info in the body
-    keysDiv = document.querySelector("#keys");
-
-    function keypress (e) {
-        //console.log(e.keyCode);
-        keys[e.keyCode] = true;
+    function gameLoop() {
     }
+}
+function edit() {
+    console.log("drawing");
+}
+
+function saveMaze() {
+    console.log("saving maze:");
+    console.log(JSON.stringify(tiles));
+    
+}
+
+function loadMaze() {
+    console.log("load maze:");
+    // 
+}
+
+function play() {
+    console.log("player start:");
+    document.getElementById("playButton").value="Edit";
+    // keyboard event listeners
+    window.addEventListener("keyup", keysUp);
+    // ticker to call gameLoop function during Pixi eventhandler
+    //app.ticker.add(gameLoop);
 
     function keysUp (e) {
         let key = e.keyCode;
         if (key == LEFT || key == A) {
-            player.x -= collisionLeft();
+            player.x -= collision(player.x - TILE_WIDTH / 2 - 1, player.y);
             console.log(e.keyCode);
         } else if (key == RIGHT || key == D) {
-            player.x += collisionRight();
+            player.x += collision(player.x + TILE_WIDTH / 2 + 1, player.y);
         } else if (key == UP || key == W) {
-            player.y -= collisionUp();
+            player.y -= collision(player.x, player.y - TILE_WIDTH / 2 - 1);
         } else if (key == DOWN || key == S) {
-            player.y += collisionDown();
+            player.y += collision(player.x, player.y + TILE_WIDTH / 2);
         }
         keys[e.keyCode] = false;
     }
@@ -159,6 +187,7 @@ window.onload = function() {
         keysDiv.innerHTML = JSON.stringify(keys);
         let pBox = player.getBounds();
     }
+}
 
     // getTile(px, py): returns the value of the tile at pixel coordinates px and py
     function getTile(px, py) {
@@ -189,8 +218,31 @@ window.onload = function() {
             //player.y = (ty + 1) * TILE_WIDTH + 200;
             return 0;
         }
+function solveMaze() {
+    console.log("solving maze:");
+}
+
+function collision(targetX, targetY) {
+    targetTile = getTile(targetX, targetY);
+    tx = targetTile[0];
+    ty = targetTile[1];
+    // console.log("tx: " + tx);
+    // console.log("ty: " + ty);
+    if (tx < 0 || tx >= NUM_TILES_X || ty < 0 || ty >= NUM_TILES_Y) {
+        console.log("trying to move outside the board");
+        return 0;
+    } else if (tiles[ty][tx] == TILE_WALL) {
+        console.log("trying to move into a wall");
+        return 0;
+    } else if (tiles[ty][tx] == TILE_FINISH) {
+        victory();
+        console.log("victory!");
+        return SPEED;
+    } else {
+        console.log("moving...");
         return SPEED;
     }
+}
 
     function collisionLeft() {
         let tile = getTile(player.x - TILE_WIDTH / 2 - 1, player.y);
@@ -215,4 +267,18 @@ window.onload = function() {
         }
         return SPEED;
     }
+// getTile(px, py): returns the value of the tile at pixel coordinates px and py
+function getTile(px, py) {
+    tx = Math.floor(px / TILE_WIDTH);
+    ty = Math.floor(py / TILE_HEIGHT); 
+    return [tx, ty];
+}
+
+function victory() {
+    win = new PIXI.Sprite.from("images/winMsg.png");
+    win.x = 0;
+    win.y = 0;
+    win.width = PIXEL_WIDTH;
+    win.height = PIXEL_HEIGHT;
+    app.stage.addChild(win);
 }
