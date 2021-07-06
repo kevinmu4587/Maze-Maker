@@ -10,10 +10,18 @@
     <script type="module" src="js/main.js"></script>
 </head>
 <body>
-    <input type="button" id="save" onclick="saveMaze()" value="Save"></input>
-    <input type="button" id="load" onclick="loadMaze()" value="Load"></input>
-    <input type="button" id="solve" onclick="solveMaze()" value="Solve"></input>
-    <input type="button" id="playButton" onclick="play()" value="Play"></input>
-    <p id="loadJson">Empty</p>
+    <button type="button" id="save">Save</button>
+    <button type="button" id="load">Load</button>
+    <button type="button" id="solve">Solve</button>
+    <button type="button" id="play">Play</button>
+    
+    <script type="module">
+        import { saveMaze, loadMaze, solveMaze, play } from '/js/main.js'
+    
+        document.querySelector('#save').addEventListener('click', saveMaze)
+        document.querySelector('#load').addEventListener('click', loadMaze)
+        document.querySelector('#solve').addEventListener('click', solveMaze)
+        document.querySelector('#play').addEventListener('click', play)
+    </script>
 </body>
 </html>

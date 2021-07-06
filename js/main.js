@@ -111,18 +111,6 @@ window.onload = function () {
     );
     document.body.appendChild(app.view);
 
-    /*
-    // create the player object
-    player = new PIXI.Sprite.from("images/player.png");
-    // where transformations are relative to
-    player.anchor.set(0.5); // set to center
-    // set player position
-    player.x = 2 * TILE_WIDTH + TILE_WIDTH / 2;
-    player.y = PIXEL_HEIGHT - 2.5 * TILE_WIDTH;
-    player.width = TILE_WIDTH;
-    player.height = TILE_HEIGHT;
-    app.stage.addChild(player);
-    */
     render();
     function gameLoop() {
     }
@@ -131,20 +119,20 @@ function edit() {
     console.log("drawing");
 }
 
-function saveMaze() {
+export function saveMaze() {
+    alert("HELLO");
     console.log("saving maze:");
     console.log(JSON.stringify(tiles));
-
 }
 
-function loadMaze() {
+export function loadMaze() {
     console.log("load maze:");
     // 
 }
 
-function play() {
+export function play() {
     console.log("player start:");
-    document.getElementById("playButton").value = "Edit";
+    document.getElementById("play").value = "Edit";
     // keyboard event listeners
     window.addEventListener("keyup", keysUp);
     // ticker to call gameLoop function during Pixi eventhandler
@@ -162,7 +150,6 @@ function play() {
         } else if (key == DOWN || key == S) {
             player.y += collision(player.x, player.y + TILE_WIDTH / 2);
         }
-        keys[e.keyCode] = false;
     }
 
     function gameLoop() {
@@ -171,14 +158,14 @@ function play() {
     }
 }
 
-function solveMaze() {
+export function solveMaze() {
     console.log("solving maze:");
 }
 
 function collision(targetX, targetY) {
-    targetTile = getTile(targetX, targetY);
-    tx = targetTile[0];
-    ty = targetTile[1];
+    let targetTile = getTile(targetX, targetY);
+    let tx = targetTile[0];
+    let ty = targetTile[1];
     // console.log("tx: " + tx);
     // console.log("ty: " + ty);
     if (tx < 0 || tx >= NUM_TILES_X || ty < 0 || ty >= NUM_TILES_Y) {
@@ -199,13 +186,13 @@ function collision(targetX, targetY) {
 
 // getTile(px, py): returns the value of the tile at pixel coordinates px and py
 function getTile(px, py) {
-    tx = Math.floor(px / TILE_WIDTH);
-    ty = Math.floor(py / TILE_HEIGHT);
+    let tx = Math.floor(px / TILE_WIDTH);
+    let ty = Math.floor(py / TILE_HEIGHT);
     return [tx, ty];
 }
 
 function victory() {
-    win = new PIXI.Sprite.from("images/winMsg.png");
+    let win = new PIXI.Sprite.from("images/winMsg.png");
     win.x = 0;
     win.y = 0;
     win.width = PIXEL_WIDTH;
