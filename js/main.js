@@ -28,8 +28,8 @@ const SPEED = TILE_WIDTH;
 const TILE_OPEN = 0;
 const TILE_WALL = 1;
 const TILE_SOLUTION = 2;
-const TILE_FINISH = 3;
-const TILE_START = 4;
+const TILE_FINISH = 'E';
+const TILE_START = 'S';
 // 0 . open 
 // 1 wall
 // 2 solution
@@ -37,17 +37,11 @@ const TILE_START = 4;
 
 // 2D array of tiles
 let tiles = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
-    [1, 'S', 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1], 
-    [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1], 
-    [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1], 
-    [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1], 
-    [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1], 
-    [1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1], 
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1], 
-    [1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1], 
-    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 'E', 1], 
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    [1, 1, 1, 1, 1],
+    [1, 'S', 0, 0, 1],
+    [1, 1, 0, 0, 1],
+    [1, 0, 1, 'E', 1],
+    [1, 1, 1, 1, 1]
 ];
 
 let maze = new Maze();
@@ -73,7 +67,7 @@ function render() {
                 // do nothing
             } else if (tiles[i][j] == TILE_WALL) {
                 // wall tile
-                wall = new PIXI.Sprite.from("images/brick.jpg");
+                let wall = new PIXI.Sprite.from("images/brick.jpg");
                 wall.x = j * TILE_WIDTH;
                 wall.y = i * TILE_HEIGHT;
                 wall.width = TILE_WIDTH;
@@ -82,13 +76,21 @@ function render() {
                 //walls.push(wall);
             } else if (tiles[i][j] == TILE_FINISH) {
                 // set the finish
-                finish = new PIXI.Sprite.from("images/finish.png");
+                let finish = new PIXI.Sprite.from("images/finish.png");
                 finish.x = j * TILE_WIDTH;
                 finish.y = i * TILE_HEIGHT;
                 finish.width = TILE_WIDTH;
                 finish.height = TILE_HEIGHT;
                 app.stage.addChild(finish);
                 //fBox = finish.getBounds();
+            } else if (tiles[i][j] == TILE_START) {
+                // set the player
+                player = new PIXI.Sprite.from("images/player.png");
+                player.x = j * TILE_WIDTH; // 2 * TILE_WIDTH + TILE_WIDTH / 2;
+                player.y = i * TILE_HEIGHT; // PIXEL_HEIGHT - 2.5 * TILE_WIDTH;
+                player.width = TILE_WIDTH;
+                player.height = TILE_HEIGHT;
+                app.stage.addChild(player);
             }
         }
     }
@@ -104,16 +106,18 @@ window.onload = function() {
     );
     document.body.appendChild(app.view);
 
+    /*
     // create the player object
     player = new PIXI.Sprite.from("images/player.png");
     // where transformations are relative to
     player.anchor.set(0.5); // set to center
     // set player position
     player.x = 2 * TILE_WIDTH + TILE_WIDTH / 2;
-    player.y = PIXEL_HEIGHT - TILE_WIDTH / 2;
+    player.y = PIXEL_HEIGHT - 2.5 * TILE_WIDTH;
     player.width = TILE_WIDTH;
     player.height = TILE_HEIGHT;
     app.stage.addChild(player);
+    */
     render();
 
     // keyboard event listeners
@@ -131,7 +135,7 @@ window.onload = function() {
     }
 
     function keysUp (e) {
-        key = e.keyCode;
+        let key = e.keyCode;
         if (key == LEFT || key == A) {
             player.x -= collisionLeft();
             console.log(e.keyCode);
@@ -147,22 +151,22 @@ window.onload = function() {
 
     function gameLoop() {
         keysDiv.innerHTML = JSON.stringify(keys);
-        pBox = player.getBounds();
+        let pBox = player.getBounds();
     }
 
     // getTile(px, py): returns the value of the tile at pixel coordinates px and py
     function getTile(px, py) {
-        tx = Math.floor(px / TILE_WIDTH);
-        ty = Math.floor(py / TILE_HEIGHT);
+        let tx = Math.floor(px / TILE_WIDTH);
+        let ty = Math.floor(py / TILE_HEIGHT);
         // console.log("tx:" + tx);
         // console.log("ty:" + ty);    
         return [tx, ty];
     }
 
     function collisionDown() {
-        tile = getTile(player.x, player.y + TILE_WIDTH / 2);
-        tx = tile[0];
-        ty = tile[1];
+        let tile = getTile(player.x, player.y + TILE_WIDTH / 2);
+        let tx = tile[0];
+        let ty = tile[1];
         if (ty == NUM_TILES_Y || tiles[ty][tx] == 1) {
             console.log("below tile is wall");
             return 0;
@@ -171,9 +175,9 @@ window.onload = function() {
     } 
 
     function collisionUp() {
-        tile = getTile(player.x, player.y - TILE_WIDTH / 2 - 1);
-        tx = tile[0];
-        ty = tile[1];
+        let tile = getTile(player.x, player.y - TILE_WIDTH / 2 - 1);
+        let tx = tile[0];
+        let ty = tile[1];
         if (ty == -1 || tiles[ty][tx] == 1) {
             console.log("above tile is wall");
             //player.y = (ty + 1) * TILE_WIDTH + 200;
@@ -183,9 +187,9 @@ window.onload = function() {
     }
 
     function collisionLeft() {
-        tile = getTile(player.x - TILE_WIDTH / 2 - 1, player.y);
-        tx = tile[0];
-        ty = tile[1];
+        let tile = getTile(player.x - TILE_WIDTH / 2 - 1, player.y);
+        let tx = tile[0];
+        let ty = tile[1];
         if (tx == -1 || tiles[ty][tx] == 1) {
             console.log("tile left of player is a wall")
             //player.x = tx * (TILE_WIDTH + 1) + 32;
@@ -195,9 +199,9 @@ window.onload = function() {
     }
 
     function collisionRight() {
-        tile = getTile(player.x + TILE_WIDTH / 2, player.y);
-        tx = tile[0];
-        ty = tile[1];
+        let tile = getTile(player.x + TILE_WIDTH / 2, player.y);
+        let tx = tile[0];
+        let ty = tile[1];
         if (tx == NUM_TILES_X || tiles[ty][tx] == 1) {
             console.log("right tile is wall");
             return 0;
