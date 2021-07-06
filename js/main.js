@@ -1,4 +1,4 @@
-import { Maze, naive_solve_maze } from "./maze_naive_solve.js";
+//import { Maze, naive_solve_maze } from "./maze_naive_solve.js";
 
 let app, player;
 
@@ -49,25 +49,25 @@ let tiles = [
 
 ];
 
-let maze = new Maze();
-maze.set_maze(tiles);
-console.log(maze.get_maze_array());
+// let maze = new Maze();
+// maze.set_maze(tiles);
+// console.log(maze.get_maze_array());
 
-let solved_maze = naive_solve_maze(maze, DOWN);
-console.log("done solving maze");
+// let solved_maze = naive_solve_maze(maze, DOWN);
+// console.log("done solving maze");
 
-for (var i = 0; i < 5; i++) {
-    for (var j = 0; j < 5; j++) {
-        console.log(solved_maze[i][j], " ");
-    }
-    console.log("");
-}
+// for (var i = 0; i < 5; i++) {
+//     for (var j = 0; j < 5; j++) {
+//         console.log(solved_maze[i][j], " ");
+//     }
+//     console.log("");
+// }
 
 // render(): renders the current board and player
 //           uses global variable tiles[][]
 function render() {
-    for (i = 0; i < NUM_TILES_Y; i++) {
-        for (j = 0; j < NUM_TILES_X; j++) {
+    for (var i = 0; i < NUM_TILES_Y; i++) {
+        for (var j = 0; j < NUM_TILES_X; j++) {
             if (tiles[i][j] == TILE_OPEN) {
                 // do nothing
             } else if (tiles[i][j] == TILE_WALL) {
@@ -104,7 +104,7 @@ function render() {
 window.onload = function () {
     app = new PIXI.Application(
         {
-            width: PIXEL_WIDTH + 800,
+            width: PIXEL_WIDTH,
             height: PIXEL_HEIGHT,
             backgroundColor: GAME_COLOR
         }
@@ -132,9 +132,12 @@ function edit() {
 }
 
 function saveMaze() {
-    console.log("saving maze:");
-    console.log(JSON.stringify(tiles));
-
+    var xhttp = new XMLHttpRequest();
+    sendString = JSON.stringify(tiles);
+    alert(sendString);
+    xhttp.open("POST", "/", true);
+    xhttp.send(sendString);
+    console.log("sent maze: " + sendString);
 }
 
 function loadMaze() {
@@ -162,7 +165,7 @@ function play() {
         } else if (key == DOWN || key == S) {
             player.y += collision(player.x, player.y + TILE_WIDTH / 2);
         }
-        keys[e.keyCode] = false;
+        //keys[e.keyCode] = false;
     }
 
     function gameLoop() {

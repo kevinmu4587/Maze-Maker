@@ -1,7 +1,11 @@
 const express = require('express');
 const path = require('path');
+        const bodyParser=require("body-parser");
 
 const app = express();
+        app.use(express.json());
+        app.use(express.urlencoded());
+        app.use(express.multipart());
 
 app.use(express.static(__dirname + '/'));
 app.engine('html', require('ejs').renderFile);
@@ -22,5 +26,6 @@ app.listen(5000, () => {
     console.log('server is running on port 5000')
 })
 
-app.post('/save', (req,res) => {
+app.post('/', (req,res) => {
+    console.log("received: " +  req.body); //prints the maze
 })
