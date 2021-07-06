@@ -1,4 +1,4 @@
-//import { Maze, naive_solve_maze } from "./maze_naive_solve.js";
+import { Maze, naive_solve_maze } from "./maze_naive_solve.js";
 
 let app, player;
 
@@ -16,8 +16,8 @@ const DOWN = "40";
 const PIXEL_HEIGHT = 800;
 const PIXEL_WIDTH = 800;
 const GAME_COLOR = 0xAAAAAA;
-const NUM_TILES_Y = 11;
-const NUM_TILES_X = 21;
+const NUM_TILES_Y = 20;
+const NUM_TILES_X = 20;
 const TILE_WIDTH = PIXEL_WIDTH / NUM_TILES_X;
 const TILE_HEIGHT = PIXEL_HEIGHT / NUM_TILES_Y;
 const SPEED = TILE_WIDTH;
@@ -35,33 +35,43 @@ const TILE_START = 'S';
 
 // 2D array of tiles
 let tiles = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 'S', 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1],
-    [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1],
-    [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1],
-    [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1],
-    [1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1],
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 'E', 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 'S', 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
+    [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1],
+    [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1],
+    [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1],
+    [1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 'E', 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
 
-// let maze = new Maze();
-// maze.set_maze(tiles);
-// console.log(maze.get_maze_array());
+let state = "edit";
 
-// let solved_maze = naive_solve_maze(maze, DOWN);
-// console.log("done solving maze");
+let maze = new Maze();
+maze.set_maze(tiles);
+console.log(maze.get_maze_array());
 
-// for (var i = 0; i < 5; i++) {
-//     for (var j = 0; j < 5; j++) {
-//         console.log(solved_maze[i][j], " ");
-//     }
-//     console.log("");
-// }
+let solved_maze = naive_solve_maze(maze, DOWN);
+console.log("done solving maze");
+
+for (var i = 0; i < 5; i++) {
+    for (var j = 0; j < 5; j++) {
+        console.log(solved_maze[i][j], " ");
+    }
+    console.log("");
+}
 
 // render(): renders the current board and player
 //           uses global variable tiles[][]
@@ -101,6 +111,7 @@ function render() {
     }
 }
 
+// onload(): load the PIXI game and render the maze
 window.onload = function () {
     app = new PIXI.Application(
         {
@@ -110,28 +121,17 @@ window.onload = function () {
         }
     );
     document.body.appendChild(app.view);
-
-    /*
-    // create the player object
-    player = new PIXI.Sprite.from("images/player.png");
-    // where transformations are relative to
-    player.anchor.set(0.5); // set to center
-    // set player position
-    player.x = 2 * TILE_WIDTH + TILE_WIDTH / 2;
-    player.y = PIXEL_HEIGHT - 2.5 * TILE_WIDTH;
-    player.width = TILE_WIDTH;
-    player.height = TILE_HEIGHT;
-    app.stage.addChild(player);
-    */
+    // keyboard event listeners
+    window.addEventListener("keyup", keysUp);
     render();
-    function gameLoop() {
-    }
 }
 function edit() {
     console.log("drawing");
 }
 
-function saveMaze() {
+// save/load functions below ------------------------------------------
+// saveMaze(): sends the maze to the backend
+export function saveMaze() {
     var xhttp = new XMLHttpRequest();
     sendString = JSON.stringify(tiles);
     alert(sendString);
@@ -140,48 +140,50 @@ function saveMaze() {
     console.log("sent maze: " + sendString);
 }
 
-function loadMaze() {
+// loadMaze(): loads a maze from the backend
+export function loadMaze() {
     console.log("load maze:");
-    // 
 }
-
-function play() {
+i
+// play(): activates player movement.
+export function play() {
     console.log("player start:");
-    document.getElementById("playButton").value = "Edit";
-    // keyboard event listeners
-    window.addEventListener("keyup", keysUp);
+    // document.getElementById("play").value = "Edit";
+    state = "play"
     // ticker to call gameLoop function during Pixi eventhandler
     //app.ticker.add(gameLoop);
-
-    function keysUp(e) {
-        let key = e.keyCode;
-        if (key == LEFT || key == A) {
-            player.x -= collision(player.x - TILE_WIDTH / 2 - 1, player.y);
-            console.log(e.keyCode);
-        } else if (key == RIGHT || key == D) {
-            player.x += collision(player.x + TILE_WIDTH / 2 + 1, player.y);
-        } else if (key == UP || key == W) {
-            player.y -= collision(player.x, player.y - TILE_WIDTH / 2 - 1);
-        } else if (key == DOWN || key == S) {
-            player.y += collision(player.x, player.y + TILE_WIDTH / 2);
-        }
-        //keys[e.keyCode] = false;
-    }
-
-    function gameLoop() {
-        keysDiv.innerHTML = JSON.stringify(keys);
-        let pBox = player.getBounds();
-    }
 }
 
-function solveMaze() {
+// solveMaze(): updates maze to show the pathway
+export function solveMaze() {
     console.log("solving maze:");
 }
 
+// gameplay functions below -------------------------------------------------------
+// keysUp(key e): called whenever a key e is pressed. used for player movement
+function keysUp(e) {
+    if (state == "edit") {
+        return;
+    }
+    let key = e.keyCode;
+    if (key == LEFT || key == A) {
+        player.x -= collision(player.x - 1, player.y);
+        console.log(e.keyCode);
+    } else if (key == RIGHT || key == D) {
+        player.x += collision(player.x + TILE_WIDTH + 1, player.y);
+    } else if (key == UP || key == W) {
+        player.y -= collision(player.x, player.y - 1);
+    } else if (key == DOWN || key == S) {
+        player.y += collision(player.x, player.y + TILE_WIDTH + 1);
+    }
+}
+
+// collision(int targetX, int targetY): given pixel coordinates (targetX, targetY), determines whether the
+//      player should move or not (or display victory message)
 function collision(targetX, targetY) {
-    targetTile = getTile(targetX, targetY);
-    tx = targetTile[0];
-    ty = targetTile[1];
+    let targetTile = getTile(targetX, targetY);
+    let tx = targetTile[0];
+    let ty = targetTile[1];
     // console.log("tx: " + tx);
     // console.log("ty: " + ty);
     if (tx < 0 || tx >= NUM_TILES_X || ty < 0 || ty >= NUM_TILES_Y) {
@@ -200,15 +202,16 @@ function collision(targetX, targetY) {
     }
 }
 
-// getTile(px, py): returns the value of the tile at pixel coordinates px and py
+// getTile(int px, int py): returns the value of the tile at pixel coordinates px and py
 function getTile(px, py) {
-    tx = Math.floor(px / TILE_WIDTH);
-    ty = Math.floor(py / TILE_HEIGHT);
+    let tx = Math.floor(px / TILE_WIDTH);
+    let ty = Math.floor(py / TILE_HEIGHT);
     return [tx, ty];
 }
 
+// victory(): displays a win message to the screen
 function victory() {
-    win = new PIXI.Sprite.from("images/winMsg.png");
+    let win = new PIXI.Sprite.from("images/winMsg.png");
     win.x = 0;
     win.y = 0;
     win.width = PIXEL_WIDTH;
