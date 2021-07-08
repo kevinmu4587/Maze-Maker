@@ -78,7 +78,7 @@ class Maze {
 function naive_solve_maze(maze, initial_direction = DOWN_DIR) {
     // note: please start character at top of maze, near upper wall for now bc of initial_direction
     var direction = parseInt(initial_direction);
-    var ret_maze_array = maze.get_maze_array();
+    var ret_maze_array = JSON.parse(JSON.stringify(maze.get_maze_array()));
     var original_x = maze.get_x();
     var original_y = maze.get_y();
     while (! maze.finished()) {
