@@ -1,7 +1,7 @@
-const UP = 0;
-const RIGHT = 1;
-const DOWN = 2;
-const LEFT = 3;
+const UP_DIR = 0;
+const RIGHT_DIR = 1;
+const DOWN_DIR = 2;
+const LEFT_DIR = 3;
 const NUM_DIRS = 4;
 
 class Maze {
@@ -36,16 +36,16 @@ class Maze {
     }
     move(direction) {
         switch(direction) {
-            case UP:
+            case UP_DIR:
                 --this.y;
                 break;
-            case RIGHT:
+            case RIGHT_DIR:
                 ++this.x;
                 break;
-            case DOWN:
+            case DOWN_DIR:
                 ++this.y;
                 break;
-            case LEFT:
+            case LEFT_DIR:
                 --this.x;
                 break;
             default:
@@ -54,13 +54,13 @@ class Maze {
     }
     is_wall(direction) {
         switch(direction) { 
-            case UP:
+            case UP_DIR:
                 return this.maze_array[this.y - 1][this.x] === 1;
-            case RIGHT:
+            case RIGHT_DIR:
                 return this.maze_array[this.y][this.x + 1] === 1;
-            case DOWN:
+            case DOWN_DIR:
                 return this.maze_array[this.y + 1][this.x] === 1;
-            case LEFT:
+            case LEFT_DIR:
                 return this.maze_array[this.y][this.x - 1] === 1;
             default:
                 throw 'Invalid direction: at is_wall.';
@@ -75,7 +75,7 @@ class Maze {
     }
 }
 
-function naive_solve_maze(maze, initial_direction = DOWN) {
+function naive_solve_maze(maze, initial_direction = DOWN_DIR) {
     // note: please start character at top of maze, near upper wall for now bc of initial_direction
     var direction = parseInt(initial_direction);
     var ret_maze_array = maze.get_maze_array();
