@@ -59,20 +59,6 @@ let tiles = [
 
 let state = "edit";
 
-let maze = new Maze();
-maze.set_maze(tiles);
-console.log(maze.get_maze_array());
-
-let solved_maze = naive_solve_maze(maze, DOWN);
-console.log("done solving maze");
-
-for (var i = 0; i < 5; i++) {
-    for (var j = 0; j < 5; j++) {
-        console.log(solved_maze[i][j], " ");
-    }
-    console.log("");
-}
-
 // render(): renders the current board and player
 //           uses global variable tiles[][]
 function render() {
@@ -157,6 +143,26 @@ export function play() {
 // solveMaze(): updates maze to show the pathway
 export function solveMaze() {
     console.log("solving maze:");
+    let maze = new Maze();
+    maze.set_maze(tiles);
+    console.log(maze.get_maze_array());
+
+    let solved_maze = naive_solve_maze(maze, DOWN);
+    console.log("done solving maze");
+    console.log(solved_maze);
+
+    for (var i = 0; i < NUM_TILES_X; i++) {
+        for (var j = 0; j < NUM_TILES_Y; j++) {
+            if(tiles[i][j] == 2) {
+                let solveTile = new PIXI.Sprite.from("images/solved.png");
+                solveTile.x = j * TILE_WIDTH;
+                solveTile.y = i * TILE_HEIGHT;
+                solveTile.width = TILE_WIDTH;
+                solveTile.height = TILE_HEIGHT;
+                app.stage.addChild(solveTile);
+            }
+        }
+    }
 }
 
 // gameplay functions below -------------------------------------------------------
