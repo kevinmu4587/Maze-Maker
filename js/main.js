@@ -1,5 +1,11 @@
 import { Maze, naive_solve_maze } from "./maze_naive_solve.js";
 
+// Import Maze Functions from app.js
+var mazeFunction = require('../app');
+
+// Get Maze
+console.log(mazeFunction.getMaze(1));
+
 let app, player;
 
 // constants for player movement
