@@ -1,4 +1,4 @@
-import { Maze, naive_solve_maze } from "./maze_naive_solve.js";
+import { Maze, MazeSolver} from "./maze_naive_solve.js";
 
 let app, player;
 
@@ -130,7 +130,7 @@ export function saveMaze() {
 export function loadMaze() {
     console.log("load maze:");
 }
-i
+
 // play(): activates player movement.
 export function play() {
     console.log("player start:");
@@ -147,7 +147,8 @@ export function solveMaze() {
     maze.set_maze(tiles);
     console.log(maze.get_maze_array());
 
-    let solved_maze = naive_solve_maze(maze, DOWN);
+    let maze_solver = new MazeSolver();
+    let solved_maze = maze_solver.naive_solve_maze(maze, DOWN);
     console.log("done solving maze");
     console.log(solved_maze);
 

@@ -4,35 +4,10 @@ const DOWN_DIR = 2;
 const LEFT_DIR = 3;
 const NUM_DIRS = 4;
 
-class Maze {
-    constructor() {
-        this.maze_array = []; //stored as 0s (empty), 1s (walls) and S/E
-        this.x = 1;
-        this.y = 1;
-    }
-    set_x(x) {
+class MazePosn {
+    constructor(x = 0, y = 0) {
         this.x = x;
-    }
-    get_x() {
-        return this.x;
-    }
-    set_y(y) {
         this.y = y;
-    }
-    get_y() {
-        return this.y;
-    }
-    set_maze(maze_array) {
-        this.maze_array = maze_array;
-        for (var y = 0; y < maze_array.length; ++y) {
-          if (maze_array[y].includes('S')) {
-            this.set_y(y);
-            this.set_x(maze_array[y].indexOf('S'));
-          }
-        }
-    }
-    get_maze_array() {
-      return this.maze_array;
     }
     move(direction) {
         switch(direction) {
@@ -52,22 +27,51 @@ class Maze {
                 throw 'Invalid direction: at move.';
         }
     }
-    is_wall(direction) {
+}
+
+class Maze {
+    constructor() {
+        this.maze_array = []; //stored as 0s (empty), 1s (walls) and S/E
+        this.start = new MazePosn();
+        this.end = new MazePosn();
+    }
+    set_maze(maze_array) {
+        this.maze_array = maze_array;
+        for (var y = 0; y < maze_array.length; ++y) {
+          if (maze_array[y].includes('S')) {
+            this.start.y = y;
+            this.start.x = maze_array[y].indexOf('S');
+          }
+          if (maze_array[y].includes('E')) {
+            this.end.y = y;
+            this.end.x = maze_array[y].indexOf('E');
+          }
+        }
+    }
+    get_maze_array() { 
+      return JSON.parse(JSON.stringify(this.maze_array));
+    }
+    // maybe add a f'n to check there is exactly one start/end????
+    is_wall(direction, x, y) { 
         switch(direction) { 
             case UP_DIR:
-                return this.maze_array[this.y - 1][this.x] === 1;
+                if (y == 0) { return true; }
+                return this.maze_array[y - 1][x] === 1;
             case RIGHT_DIR:
-                return this.maze_array[this.y][this.x + 1] === 1;
+                if (x == this.maze_array[y].length - 1) { return true; }
+                return this.maze_array[y][x + 1] === 1;
             case DOWN_DIR:
-                return this.maze_array[this.y + 1][this.x] === 1;
+                if (y == this.maze_array.length - 1) { return true; }
+                return this.maze_array[y + 1][x] === 1;
             case LEFT_DIR:
-                return this.maze_array[this.y][this.x - 1] === 1;
+                if (x == 0) { return true; }
+                return this.maze_array[y][x - 1] === 1;
             default:
                 throw 'Invalid direction: at is_wall.';
         }
     }
-    finished() {
-        if (this.maze_array[this.y][this.x] == 'E') {
+    finished(x, y) {
+        if (x == this.end.x && y == this.end.y) {
             console.log('Exit reached!');
             return true;
         }
@@ -75,27 +79,26 @@ class Maze {
     }
 }
 
-function naive_solve_maze(maze, initial_direction = DOWN_DIR) {
-    // note: please start character at top of maze, near upper wall for now bc of initial_direction
-    var direction = parseInt(initial_direction);
-    var ret_maze_array = JSON.parse(JSON.stringify(maze.get_maze_array()));
-    var original_x = maze.get_x();
-    var original_y = maze.get_y();
-    while (! maze.finished()) {
-        ret_maze_array[maze.get_y()][maze.get_x()] = 2;  // 2 will represent path
-        for (var i = 0; i < NUM_DIRS; ++i) {
-            var try_dir = (i + direction + 3) % NUM_DIRS;
-            if (! maze.is_wall(try_dir)) {
-                maze.move(try_dir);
-                direction = try_dir;
-                break;
+class MazeSolver {
+    naive_solve_maze(maze, initial_direction = DOWN_DIR) {
+        // note: please start character at top of maze, near upper wall for now bc of initial_direction
+        var direction = parseInt(initial_direction);
+        var ret_maze_array = maze.get_maze_array(); 
+        var lhwf = new MazePosn(maze.start.x, maze.start.y);
+        while (! maze.finished(lhwf.x, lhwf.y)) {
+            ret_maze_array[lhwf.y][lhwf.x] = 2;  // 2 will represent path
+            for (var i = 0; i < NUM_DIRS; ++i) {
+                var try_dir = (i + direction + 3) % NUM_DIRS;
+                if (! maze.is_wall(try_dir, lhwf.x, lhwf.y)) {
+                    lhwf.move(try_dir);
+                    direction = try_dir;
+                    break;
+                }
             }
         }
+        ret_maze_array[maze.start.y][maze.start.x] = 'S';
+        return ret_maze_array; // let's make this a list of posns? or just 2d array
     }
-    maze.set_x(original_x);
-    maze.set_y(original_y);
-    ret_maze_array[maze.get_y()][maze.get_x()] = 'S';
-    return ret_maze_array; //returns the array of arrays ONLY
 }
 
 const eg1 =
@@ -121,9 +124,4 @@ const eg2 = [
     [0, 0, 0, 'E', 1]
 ];
 
-export { Maze, naive_solve_maze };
-/*
-var sampleMaze = new Maze();
-sampleMaze.set_maze(eg2);
-naive_solve_maze(sampleMaze, DOWN);
-*/
+export { Maze, MazeSolver};
