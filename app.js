@@ -43,6 +43,7 @@ app.get('/createtable', (req, res) => {
 })
 
 // addMaze Function
+// - Inserts array (string) to the database
 function addMaze(array) {
     let data = {mazeArray : array};
     let sql = 'INSERT INTO maze SET ?';
@@ -97,3 +98,6 @@ app.listen(5000, () => {
 app.post('/', (req,res) => {
     console.log("received: " +  req.body); //prints the maze
 })
+
+// Export getMaze and addMaze function
+module.exports = { getMaze, addMaze };
