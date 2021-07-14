@@ -1,10 +1,10 @@
 import { Maze, MazeSolver} from "./maze_naive_solve.js";
 
 // Import Maze Functions from app.js
-var mazeFunction = require('../app');
+// var mazeFunction = require('../app');
 
 // Get Maze
-console.log(mazeFunction.getMaze(1));
+// console.log(mazeFunction.getMaze(1));
 
 let app, player;
 
@@ -63,11 +63,10 @@ let tiles = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
 
-<<<<<<< HEAD
-let state = "";
-=======
 let state = "edit";
->>>>>>> fba7c198beefaafaccdd059d44b47c3ea4f927bd
+let solved = false;
+let solved_maze;
+let solved_tiles = [];
 
 // render(): renders the current board and player
 //           uses global variable tiles[][]
@@ -167,32 +166,46 @@ export function play() {
 
 // solveMaze(): updates maze to show the pathway
 export function solveMaze() {
+    if(solved) {
+        for(i = 0; i < solved_tiles.length; i++) {
+            app.stage.removeChild(solved_tiles[i]);
+        }
+        solved = false;
+        return;
+    }
     console.log("solving maze:");
     let maze = new Maze();
     maze.set_maze(tiles);
     console.log(maze.get_maze_array());
 
     let maze_solver = new MazeSolver();
-    let solved_maze = maze_solver.naive_solve_maze(maze, DOWN);
+    solved_maze = maze_solver.naive_solve_maze(maze, DOWN);
     console.log("done solving maze");
-    console.log(solved_maze);
 
     for (var i = 0; i < NUM_TILES_X; i++) {
         for (var j = 0; j < NUM_TILES_Y; j++) {
-<<<<<<< HEAD
-            if(tiles[i][j] == TILE_SOLUTION) {
-=======
-            if(tiles[i][j] == 2) {
->>>>>>> fba7c198beefaafaccdd059d44b47c3ea4f927bd
+            if(solved_maze[i][j] == TILE_SOLUTION) {
                 let solveTile = new PIXI.Sprite.from("images/solved.png");
                 solveTile.x = j * TILE_WIDTH;
                 solveTile.y = i * TILE_HEIGHT;
                 solveTile.width = TILE_WIDTH;
                 solveTile.height = TILE_HEIGHT;
+                solved_tiles.push(solveTile);
                 app.stage.addChild(solveTile);
             }
         }
     }
+    let x = player.x;
+    let y = player.y;
+    console.log(x, y);
+    app.stage.removeChild(player);
+    player = new PIXI.Sprite.from("images/player.png");
+    player.x = x; 
+    player.y = y; 
+    player.width = TILE_WIDTH;
+    player.height = TILE_HEIGHT;
+    app.stage.addChild(player);
+    solved = true;
 }
 
 // gameplay functions below -------------------------------------------------------
@@ -262,10 +275,14 @@ function victory() {
     win.width = PIXEL_WIDTH;
     win.height = PIXEL_HEIGHT;
     app.stage.addChild(win);
+    state = "won";
 }
 
 // manage buttons
 function onButtonUp() {
+    if(state == "won") {
+        return;
+    }
     console.log("drawing now.");
     state = "edit";
 }
