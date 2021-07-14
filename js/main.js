@@ -63,7 +63,11 @@ let tiles = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
 
+<<<<<<< HEAD
 let state = "";
+=======
+let state = "edit";
+>>>>>>> fba7c198beefaafaccdd059d44b47c3ea4f927bd
 
 // render(): renders the current board and player
 //           uses global variable tiles[][]
@@ -175,7 +179,11 @@ export function solveMaze() {
 
     for (var i = 0; i < NUM_TILES_X; i++) {
         for (var j = 0; j < NUM_TILES_Y; j++) {
+<<<<<<< HEAD
             if(tiles[i][j] == TILE_SOLUTION) {
+=======
+            if(tiles[i][j] == 2) {
+>>>>>>> fba7c198beefaafaccdd059d44b47c3ea4f927bd
                 let solveTile = new PIXI.Sprite.from("images/solved.png");
                 solveTile.x = j * TILE_WIDTH;
                 solveTile.y = i * TILE_HEIGHT;

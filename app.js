@@ -1,6 +1,10 @@
 const express = require('express');
 const path = require('path');
+<<<<<<< HEAD
         // const bodyParser=require("body-parser");
+=======
+const bodyParser=require("body-parser");
+>>>>>>> fba7c198beefaafaccdd059d44b47c3ea4f927bd
 const mysql = require('mysql');
 
 const app = express();
