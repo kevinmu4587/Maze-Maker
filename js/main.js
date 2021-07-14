@@ -1,4 +1,10 @@
-import { Maze, naive_solve_maze } from "./maze_naive_solve.js";
+import { Maze, MazeSolver} from "./maze_naive_solve.js";
+
+// Import Maze Functions from app.js
+var mazeFunction = require('../app');
+
+// Get Maze
+console.log(mazeFunction.getMaze(1));
 
 let app, player;
 
@@ -47,31 +53,17 @@ let tiles = [
     [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 'E', 1],
+    [1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 'E', 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
 
-let state = "edit";
-
-let maze = new Maze();
-maze.set_maze(tiles);
-console.log(maze.get_maze_array());
-
-let solved_maze = naive_solve_maze(maze, DOWN);
-console.log("done solving maze");
-
-for (var i = 0; i < 5; i++) {
-    for (var j = 0; j < 5; j++) {
-        console.log(solved_maze[i][j], " ");
-    }
-    console.log("");
-}
+let state = "";
 
 // render(): renders the current board and player
 //           uses global variable tiles[][]
@@ -109,13 +101,24 @@ function render() {
             }
         }
     }
+    var drawButton = new PIXI.Sprite.from("images/draw.png");
+    var eraseButton = new PIXI.Sprite.from("images/erase.png");
+    drawButton.interactive = true;
+    drawButton.buttonMode = true;
+    drawButton.width = 3 * TILE_WIDTH;
+    drawButton.height = 1 * TILE_WIDTH;
+    drawButton.x = PIXEL_WIDTH + TILE_WIDTH;
+    drawButton.y = PIXEL_HEIGHT / 3;
+    drawButton.on('pointerup', onButtonUp);
+    app.stage.addChild(drawButton);
+    app.renderer.plugins.interaction.on('pointerup', onClick);
 }
 
 // onload(): load the PIXI game and render the maze
 window.onload = function () {
     app = new PIXI.Application(
         {
-            width: PIXEL_WIDTH,
+            width: PIXEL_WIDTH + 300,
             height: PIXEL_HEIGHT,
             backgroundColor: GAME_COLOR
         }
@@ -123,17 +126,15 @@ window.onload = function () {
     document.body.appendChild(app.view);
     // keyboard event listeners
     window.addEventListener("keyup", keysUp);
+    window.addEventListener("keydown", keysDown);
     render();
-}
-function edit() {
-    console.log("drawing");
 }
 
 // save/load functions below ------------------------------------------
 // saveMaze(): sends the maze to the backend
 export function saveMaze() {
     var xhttp = new XMLHttpRequest();
-    sendString = JSON.stringify(tiles);
+    var sendString = JSON.stringify(tiles);
     alert(sendString);
     xhttp.open("POST", "/", true);
     xhttp.send(sendString);
@@ -144,12 +145,18 @@ export function saveMaze() {
 export function loadMaze() {
     console.log("load maze:");
 }
-i
+
 // play(): activates player movement.
 export function play() {
-    console.log("player start:");
-    // document.getElementById("play").value = "Edit";
-    state = "play"
+    if (state == "edit") {
+        console.log("player start");
+        document.querySelector("#play").innerHTML = "Edit";
+        state = "play";
+    } else {
+        console.log("edit maze:");
+        document.querySelector("#play").innerHTML = "Play";
+        state = "edit";
+    }
     // ticker to call gameLoop function during Pixi eventhandler
     //app.ticker.add(gameLoop);
 }
@@ -157,10 +164,31 @@ export function play() {
 // solveMaze(): updates maze to show the pathway
 export function solveMaze() {
     console.log("solving maze:");
+    let maze = new Maze();
+    maze.set_maze(tiles);
+    console.log(maze.get_maze_array());
+
+    let maze_solver = new MazeSolver();
+    let solved_maze = maze_solver.naive_solve_maze(maze, DOWN);
+    console.log("done solving maze");
+    console.log(solved_maze);
+
+    for (var i = 0; i < NUM_TILES_X; i++) {
+        for (var j = 0; j < NUM_TILES_Y; j++) {
+            if(tiles[i][j] == TILE_SOLUTION) {
+                let solveTile = new PIXI.Sprite.from("images/solved.png");
+                solveTile.x = j * TILE_WIDTH;
+                solveTile.y = i * TILE_HEIGHT;
+                solveTile.width = TILE_WIDTH;
+                solveTile.height = TILE_HEIGHT;
+                app.stage.addChild(solveTile);
+            }
+        }
+    }
 }
 
 // gameplay functions below -------------------------------------------------------
-// keysUp(key e): called whenever a key e is pressed. used for player movement
+// keysUp(key e): called whenever a key e is lifeted up. used for player movement
 function keysUp(e) {
     if (state == "edit") {
         return;
@@ -175,6 +203,15 @@ function keysUp(e) {
         player.y -= collision(player.x, player.y - 1);
     } else if (key == DOWN || key == S) {
         player.y += collision(player.x, player.y + TILE_WIDTH + 1);
+    }
+}
+
+// keysdown(e): called whenever a key e is pressed down. used to prevent scrolling during movement
+function keysDown(e) {
+    let key = e.keyCode;
+    let arrowKeys = [LEFT, DOWN, UP, RIGHT];
+    if (arrowKeys.includes(key)) {
+        e.preventDefault();
     }
 }
 
@@ -217,4 +254,33 @@ function victory() {
     win.width = PIXEL_WIDTH;
     win.height = PIXEL_HEIGHT;
     app.stage.addChild(win);
+}
+
+// manage buttons
+function onButtonUp() {
+    console.log("drawing now.");
+    state = "edit";
+}
+
+// whenever the user clicks anywhere on the screen  
+function onClick (event) {
+    let x = event.data.global.x;
+    console.log(x)
+    let y = event.data.global.y;
+    console.log(y)
+    if (x <= PIXEL_WIDTH && y <= PIXEL_HEIGHT) {
+        let index_x = Math.floor(x / TILE_WIDTH);
+        let index_y = Math.floor(y / TILE_HEIGHT);
+        if (state == "edit") {
+            tiles[index_y][index_x] = TILE_WALL;
+            let wall = new PIXI.Sprite.from("images/brick.jpg");
+            wall.x = index_x * TILE_WIDTH;
+            wall.y = index_y * TILE_HEIGHT;
+            wall.width = TILE_WIDTH;
+            wall.height = TILE_HEIGHT;
+            app.stage.addChild(wall);
+        } else if (state == "erase") {
+            tiles[index_x][index_y] = TILE_OPEN;
+        }
+    }
 }
