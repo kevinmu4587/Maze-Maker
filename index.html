@@ -13,15 +13,13 @@
     <button type="button" id="save">Save</button>
     <button type="button" id="load">Load</button>
     <button type="button" id="solve">Solve</button>
-    <button type="button" id="play">Play</button>
     
     <script type="module">
-        import { saveMaze, loadMaze, solveMaze, play } from '/js/main.js'
+        import { saveMaze, loadMaze, solveMaze} from '/js/main.js'
     
         document.querySelector('#save').addEventListener('click', saveMaze)
         document.querySelector('#load').addEventListener('click', loadMaze)
         document.querySelector('#solve').addEventListener('click', solveMaze)
-        document.querySelector('#play').addEventListener('click', play)
     </script>
 </body>
 </html>

@@ -64,7 +64,7 @@ let tiles = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
 
-let state = "edit";
+let state = "play";
 let solved = false;
 let solved_maze;
 let solved_tiles = [];
@@ -106,15 +106,23 @@ function render() {
         }
     }
     var drawButton = new PIXI.Sprite.from("images/draw.png");
-    var eraseButton = new PIXI.Sprite.from("images/erase.png");
+    var playButton = new PIXI.Sprite.from("images/play.png");
     drawButton.interactive = true;
     drawButton.buttonMode = true;
     drawButton.width = 3 * TILE_WIDTH;
     drawButton.height = 1 * TILE_WIDTH;
     drawButton.x = PIXEL_WIDTH + TILE_WIDTH;
     drawButton.y = PIXEL_HEIGHT / 3;
-    drawButton.on('pointerup', onButtonUp);
+    drawButton.mousedown = buttonClick.bind(undefined, "draw");
+    playButton.interactive = true;
+    playButton.buttonMode = true;
+    playButton.width = 3 * TILE_WIDTH;
+    playButton.height = 1 * TILE_WIDTH;
+    playButton.x = PIXEL_WIDTH + TILE_WIDTH;
+    playButton.y = PIXEL_HEIGHT / 3 + 3 * TILE_HEIGHT;
+    playButton.mousedown = buttonClick.bind(undefined, "play");
     app.stage.addChild(drawButton);
+    app.stage.addChild(playButton);
     app.renderer.plugins.interaction.on('pointerup', onClick);
 }
 
@@ -140,68 +148,95 @@ window.onload = function () {
     render();
 }
 
+function compressMaze() {
+    var compressed = "";
+    for (var y = 0; y < NUM_TILES_Y; ++y) {
+        for (var x = 0; x < NUM_TILES_X; ++x) {
+            compressed += tiles[y][x];
+        }
+    }
+    return compressed;
+}
+
+function decompress(compressed) {
+    var count = 2;
+    for (var y = 0; y < NUM_TILES_Y; ++y) {
+        for (var x = 0; x < NUM_TILES_X; ++x) {
+            c = compressed.charAt(count);
+            if (c == '0' || c == '1') {
+                tiles[y][x] = c - '0';
+            } else {
+                tiles[y][x] = c;
+            } 
+            count++;
+        }
+    }
+}
+
 // save/load functions below ------------------------------------------
 // saveMaze(): sends the maze to the backend
 export function saveMaze() {
-    var body = JSON.stringify({
-        "maze": "jello my friends"  
-    });
-    console.log("sent " + JSON.stringify(tiles));
+    console.log("sent " + compressMaze());
     fetch('/addmaze', {
         method: 'POST',
+        mode: 'cors',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            "maze": tiles
+            "maze": compressMaze()
         })
     });
 }
 
 // loadMaze(): loads a maze from the backend
 export function loadMaze() {
+    location.replace("../load.html");
     console.log("load maze:");
-}
-
-// play(): activates player movement.
-export function play() {
-    if (state == "edit") {
-        console.log("player start");
-        document.querySelector("#play").innerHTML = "Edit";
-        state = "play";
-    } else {
-        console.log("edit maze:");
-        document.querySelector("#play").innerHTML = "Play";
-        state = "edit";
-    }
-    // ticker to call gameLoop function during Pixi eventhandler
-    //app.ticker.add(gameLoop);
 }
 
 // solveMaze(): updates maze to show the pathway
 export function solveMaze() {
+    if(solved) {
+        for(i = 0; i < solved_tiles.length; i++) {
+            app.stage.removeChild(solved_tiles[i]);
+        }
+        solved = false;
+        return;
+    }
     console.log("solving maze:");
     let maze = new Maze();
     maze.set_maze(tiles);
     console.log(maze.get_maze_array());
 
     let maze_solver = new MazeSolver();
-    let solved_maze = maze_solver.naive_solve_maze(maze, DOWN);
+    solved_maze = maze_solver.naive_solve_maze(maze, DOWN);
     console.log("done solving maze");
-    console.log(solved_maze);
 
     for (var i = 0; i < NUM_TILES_X; i++) {
         for (var j = 0; j < NUM_TILES_Y; j++) {
-            if(tiles[i][j] == TILE_SOLUTION) {
+            if(solved_maze[i][j] == TILE_SOLUTION) {
                 let solveTile = new PIXI.Sprite.from("images/solved.png");
                 solveTile.x = j * TILE_WIDTH;
                 solveTile.y = i * TILE_HEIGHT;
                 solveTile.width = TILE_WIDTH;
                 solveTile.height = TILE_HEIGHT;
+                solved_tiles.push(solveTile);
                 app.stage.addChild(solveTile);
             }
         }
     }
+    let x = player.x;
+    let y = player.y;
+    console.log(x, y);
+    app.stage.removeChild(player);
+    player = new PIXI.Sprite.from("images/player.png");
+    player.x = x; 
+    player.y = y; 
+    player.width = TILE_WIDTH;
+    player.height = TILE_HEIGHT;
+    app.stage.addChild(player);
+    solved = true;
 }
 
 // gameplay functions below -------------------------------------------------------
@@ -274,9 +309,14 @@ function victory() {
 }
 
 // manage buttons
-function onButtonUp() {
-    console.log("drawing now.");
-    state = "edit";
+function buttonClick(which, button) {
+    if (which == "draw") {
+        state = "edit";
+        console.log("drawing now.");
+    } else if (which == "play") {
+        state = "play";
+        console.log("playing now.");
+    }
 }
 
 // whenever the user clicks anywhere on the screen  
@@ -298,7 +338,7 @@ function onClick (event) {
             walls[index_y][index_x].height = TILE_HEIGHT;
             // walls[index_x][index_y] = wall;
             app.stage.addChild(walls[index_y][index_x]);
-        } else {
+        } else if (state == "edit" && tiles[index_y][index_x] == TILE_WALL) {
             console.log("removing wall at ", index_x, index_y);
             tiles[index_y][index_x] = TILE_OPEN;
             app.stage.removeChild(walls[index_y][index_x]);

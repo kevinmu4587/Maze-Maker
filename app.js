@@ -3,10 +3,10 @@ const path = require('path');
 const mysql = require('mysql');
 
 const app = express();
-let cors = require("cors");
-app.use(cors());
+// let cors = require("cors");
+// app.use(cors());
 
-app.use(express.urlencoded());
+// app.use(express.urlencoded());
 
 // Parse JSON bodies (as sent by API clients)
 app.use(express.json());
@@ -77,18 +77,30 @@ app.post('/addmaze', (req, res) => {
 
 // getMaze Function
 function getMaze(id) {
-    let sql = `SELECT mazeArray FROM maze WHERE id = ${id}`;
-    let query = db.query(sql, (err, result) => {
-        if (err) throw err;
-        console.log(result[0].mazeArray);
-        return result[0].mazeArray;
-    });
+//     let sql = `SELECT mazeArray FROM maze WHERE id = ${id}`;
+//     let query = db.query(sql, (err, result) => {
+//         if (err) throw err;
+//         //console.log(result[0].mazeArray);
+//         return result[0].mazeArray;
+//     });
 }
 
 // Get MazeArray from Table
-app.get('/getmaze/:id', (req, res) => {
-    let mazeArray = getMaze(id);
-    res.send(mazeArray);
+app.post('/getmaze', (req, res) => {
+    let id = 40;
+    console.log("we got a get request of id " + id)
+    let sql = `SELECT mazeArray FROM maze WHERE id = ${id}`;
+    let query = db.query(sql, (err, result) => {
+        if (err) throw err;
+        //console.log(result[0].mazeArray);
+        //return result[0].mazeArray;
+        res.send({"maze": result[0].mazeArray});
+    });
+    //let mazeArray = getMaze(id);
+    //res.send({"maze": mazeArray});
+    //let msg = "" + mazeArray;
+    //console.log(msg)
+    //res.send({message: msg});
 })
 
 app.use(express.static(__dirname + '/'));
@@ -116,5 +128,5 @@ app.post('/', (req,res) => {
 })
 
 // Export getMaze and addMaze function
-module.exports = { getMaze, addMaze };
+// module.exports = { getMaze, addMaze };
 // export { addMaze, getMaze };
