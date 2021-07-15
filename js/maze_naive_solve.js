@@ -80,24 +80,46 @@ class Maze {
 }
 
 class MazeSolver {
-    naive_solve_maze(maze, initial_direction = DOWN_DIR) {
-        // note: please start character at top of maze, near upper wall for now bc of initial_direction
+    naive_solve_maze_unwrapped(maze, initial_direction) {
+        // note: please start character in a corner
         var direction = parseInt(initial_direction);
-        var ret_maze_array = maze.get_maze_array(); 
+        var path = [];
         var lhwf = new MazePosn(maze.start.x, maze.start.y);
         while (! maze.finished(lhwf.x, lhwf.y)) {
-            ret_maze_array[lhwf.y][lhwf.x] = 2;  // 2 will represent path
-            for (var i = 0; i < NUM_DIRS; ++i) {
-                var try_dir = (i + direction + 3) % NUM_DIRS;
-                if (! maze.is_wall(try_dir, lhwf.x, lhwf.y)) {
-                    lhwf.move(try_dir);
-                    direction = try_dir;
+            var posn = [lhwf.x, lhwf.y];
+            path.push(posn);
+                for (var i = 0; i < NUM_DIRS; ++i) {
+                    var try_dir = (i + direction + 3) % NUM_DIRS;
+                    if (! maze.is_wall(try_dir, lhwf.x, lhwf.y)) {
+                        lhwf.move(try_dir);
+                        direction = try_dir;
+                        break;
+                    }
+                }
+        }
+        return path; // 2d array of xs and ys
+    }
+    remove_path_dead_ends(path) {
+        var direct_path = JSON.parse(JSON.stringify(path));
+        for (var i = 0; i < direct_path.length; ++i) {
+            for (var j = i + 1; j < direct_path.length; ++j) {
+                if (direct_path[i][0] == direct_path[j][0] && direct_path[i][1] == direct_path[j][1]) {
+                    direct_path.splice(i, j - i);
                     break;
                 }
             }
         }
+        return direct_path;
+    }
+    naive_solve_maze(maze, initial_direction = DOWN_DIR) {
+        var solved_path = this.naive_solve_maze_unwrapped(maze, initial_direction); // 2d array of path
+        solved_path = this.remove_path_dead_ends(solved_path); // can i just modify arg?
+        var ret_maze_array = maze.get_maze_array();
+        for (var i = 0; i < solved_path.length; ++i) {
+            ret_maze_array[solved_path[i][1]][solved_path[i][0]] = 2;
+        }
         ret_maze_array[maze.start.y][maze.start.x] = 'S';
-        return ret_maze_array; // let's make this a list of posns? or just 2d array
+        return ret_maze_array;
     }
 }
 
