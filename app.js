@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-        // const bodyParser=require("body-parser");
+const bodyParser = require("body-parser");
 const mysql = require('mysql');
 
 const app = express();
@@ -34,11 +34,20 @@ app.get('/createdb', (req, res) => {
 
 // Create Table
 app.get('/createtable', (req, res) => {
-    let sql = 'CREATE TABLE maze(id int AUTO_INCREMENT, mazeArray VARCHAR(255), PRIMARY KEY (id))';
+    let sql = 'CREATE TABLE maze(id int AUTO_INCREMENT, mazeArray TEXT, PRIMARY KEY (id))';
     db.query(sql, (err, result) => {
         if (err) throw err;
         console.log(result);
         res.send('Table created');
+    })
+})
+
+app.get('/updatetable', (req, res) => {
+    let sql = 'ALTER TABLE maze MODIFY mazeArray TEXT';
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        console.log(result);
+        res.send('Table altered');
     })
 })
 
@@ -71,7 +80,7 @@ function getMaze(id) {
 
 // Get MazeArray from Table
 app.get('/getmaze/:id', (req, res) => {
-    let mazeArray = getMaze(1);
+    let mazeArray = getMaze(id);
     res.send(mazeArray);
 })
 
@@ -101,3 +110,4 @@ app.post('/', (req,res) => {
 
 // Export getMaze and addMaze function
 module.exports = { getMaze, addMaze };
+// export { addMaze, getMaze };
