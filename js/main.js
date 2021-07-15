@@ -1,7 +1,6 @@
 import { Maze, MazeSolver} from "./maze_naive_solve.js";
 
 // Import Maze Functions from app.js
-//var mazeFunction = require('../app');
 // var mazeFunc = require('../app');
 //import { getMaze, addMaze } from "../app.js";
 
@@ -66,6 +65,10 @@ let tiles = [
 ];
 
 let state = "edit";
+let solved = false;
+let solved_maze;
+let solved_tiles = [];
+let walls = [];
 
 // render(): renders the current board and player
 //           uses global variable tiles[][]
@@ -76,13 +79,12 @@ function render() {
                 // do nothing
             } else if (tiles[i][j] == TILE_WALL) {
                 // wall tile
-                let wall = new PIXI.Sprite.from("images/brick.jpg");
-                wall.x = j * TILE_WIDTH;
-                wall.y = i * TILE_HEIGHT;
-                wall.width = TILE_WIDTH;
-                wall.height = TILE_HEIGHT;
-                app.stage.addChild(wall);
-                //walls.push(wall);
+                walls[i][j] = new PIXI.Sprite.from("images/brick.jpg");
+                walls[i][j].x = j * TILE_WIDTH;
+                walls[i][j].y = i * TILE_HEIGHT;
+                walls[i][j].width = TILE_WIDTH;
+                walls[i][j].height = TILE_HEIGHT;
+                app.stage.addChild(walls[i][j]);
             } else if (tiles[i][j] == TILE_FINISH) {
                 // set the finish
                 let finish = new PIXI.Sprite.from("images/finish.png");
@@ -129,6 +131,12 @@ window.onload = function () {
     // keyboard event listeners
     window.addEventListener("keyup", keysUp);
     window.addEventListener("keydown", keysDown);
+    for(let i = 0; i < NUM_TILES_Y; i++) {
+        walls[i] = [];
+        for(let j = 0; j < NUM_TILES_X; j++) {
+            walls[i][j] = null;
+        }
+    }
     render();
 }
 
@@ -280,16 +288,21 @@ function onClick (event) {
     if (x <= PIXEL_WIDTH && y <= PIXEL_HEIGHT) {
         let index_x = Math.floor(x / TILE_WIDTH);
         let index_y = Math.floor(y / TILE_HEIGHT);
-        if (state == "edit") {
+        if (state == "edit" && tiles[index_y][index_x] == TILE_OPEN) {
+            console.log("adding wall at ", index_x, index_y)
             tiles[index_y][index_x] = TILE_WALL;
-            let wall = new PIXI.Sprite.from("images/brick.jpg");
-            wall.x = index_x * TILE_WIDTH;
-            wall.y = index_y * TILE_HEIGHT;
-            wall.width = TILE_WIDTH;
-            wall.height = TILE_HEIGHT;
-            app.stage.addChild(wall);
-        } else if (state == "erase") {
-            tiles[index_x][index_y] = TILE_OPEN;
+            walls[index_y][index_x] = new PIXI.Sprite.from("images/brick.jpg");
+            walls[index_y][index_x].y = index_y * TILE_HEIGHT;
+            walls[index_y][index_x].x = index_x * TILE_WIDTH;
+            walls[index_y][index_x].width = TILE_WIDTH;
+            walls[index_y][index_x].height = TILE_HEIGHT;
+            // walls[index_x][index_y] = wall;
+            app.stage.addChild(walls[index_y][index_x]);
+        } else {
+            console.log("removing wall at ", index_x, index_y);
+            tiles[index_y][index_x] = TILE_OPEN;
+            app.stage.removeChild(walls[index_y][index_x]);
+            walls[index_y][index_x] = null;
         }
     }
 }
