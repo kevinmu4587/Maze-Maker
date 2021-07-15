@@ -176,10 +176,9 @@ export function solveMaze() {
     console.log("solving maze:");
     let maze = new Maze();
     maze.set_maze(tiles);
-    console.log(maze.get_maze_array());
 
     let maze_solver = new MazeSolver();
-    solved_maze = maze_solver.naive_solve_maze(maze, DOWN);
+    solved_maze = maze_solver.bfsearch(maze); //maze_solver.naive_solve_maze(maze, DOWN);
     console.log("done solving maze");
 
     for (var i = 0; i < NUM_TILES_X; i++) {
