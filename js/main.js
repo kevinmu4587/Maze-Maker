@@ -1,7 +1,7 @@
 import { Maze, MazeSolver} from "./maze_naive_solve.js";
 
 // Import Maze Functions from app.js
-// var mazeFunction = require('../app');
+//var mazeFunction = require('../app');
 
 // Get Maze
 // console.log(mazeFunction.getMaze(1));
@@ -64,9 +64,6 @@ let tiles = [
 ];
 
 let state = "edit";
-let solved = false;
-let solved_maze;
-let solved_tiles = [];
 
 // render(): renders the current board and player
 //           uses global variable tiles[][]
@@ -136,12 +133,34 @@ window.onload = function () {
 // save/load functions below ------------------------------------------
 // saveMaze(): sends the maze to the backend
 export function saveMaze() {
-    var xhttp = new XMLHttpRequest();
-    var sendString = JSON.stringify(tiles);
-    alert(sendString);
-    xhttp.open("POST", "/", true);
-    xhttp.send(sendString);
-    console.log("sent maze: " + sendString);
+    var body = JSON.stringify({
+        "maze": "jello my friends"  
+    });
+    console.log("sent " + JSON.stringify(tiles));
+    // var request = new Request('http://localhost:5000/addmaze',{
+    //     form : 'body=' + body,
+    //     method: 'post',
+    //     mode: 'cors'
+    // }); 
+    // fetch(request).then(function(data){
+    //     return data;
+    // });
+    fetch('/addmaze', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "maze": tiles
+        })
+    });
+    // var xhttp = new XMLHttpRequest();
+    // var sendString = JSON.stringify(tiles);
+    // alert(sendString);
+    // xhttp.open("POST", "/addmaze", true);
+    // xhttp.send(sendString);
+    // console.log("sent maze:");
+    //mazeFunction.addMaze(tiles);
 }
 
 // loadMaze(): loads a maze from the backend
@@ -166,46 +185,28 @@ export function play() {
 
 // solveMaze(): updates maze to show the pathway
 export function solveMaze() {
-    if(solved) {
-        for(i = 0; i < solved_tiles.length; i++) {
-            app.stage.removeChild(solved_tiles[i]);
-        }
-        solved = false;
-        return;
-    }
     console.log("solving maze:");
     let maze = new Maze();
     maze.set_maze(tiles);
     console.log(maze.get_maze_array());
 
     let maze_solver = new MazeSolver();
-    solved_maze = maze_solver.naive_solve_maze(maze, DOWN);
+    let solved_maze = maze_solver.naive_solve_maze(maze, DOWN);
     console.log("done solving maze");
+    console.log(solved_maze);
 
     for (var i = 0; i < NUM_TILES_X; i++) {
         for (var j = 0; j < NUM_TILES_Y; j++) {
-            if(solved_maze[i][j] == TILE_SOLUTION) {
+            if(tiles[i][j] == TILE_SOLUTION) {
                 let solveTile = new PIXI.Sprite.from("images/solved.png");
                 solveTile.x = j * TILE_WIDTH;
                 solveTile.y = i * TILE_HEIGHT;
                 solveTile.width = TILE_WIDTH;
                 solveTile.height = TILE_HEIGHT;
-                solved_tiles.push(solveTile);
                 app.stage.addChild(solveTile);
             }
         }
     }
-    let x = player.x;
-    let y = player.y;
-    console.log(x, y);
-    app.stage.removeChild(player);
-    player = new PIXI.Sprite.from("images/player.png");
-    player.x = x; 
-    player.y = y; 
-    player.width = TILE_WIDTH;
-    player.height = TILE_HEIGHT;
-    app.stage.addChild(player);
-    solved = true;
 }
 
 // gameplay functions below -------------------------------------------------------
@@ -275,14 +276,10 @@ function victory() {
     win.width = PIXEL_WIDTH;
     win.height = PIXEL_HEIGHT;
     app.stage.addChild(win);
-    state = "won";
 }
 
 // manage buttons
 function onButtonUp() {
-    if(state == "won") {
-        return;
-    }
     console.log("drawing now.");
     state = "edit";
 }

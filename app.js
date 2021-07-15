@@ -1,12 +1,17 @@
 const express = require('express');
 const path = require('path');
-        // const bodyParser=require("body-parser");
 const mysql = require('mysql');
 
 const app = express();
-        // app.use(express.json());
-        // app.use(express.urlencoded());
-        // app.use(express.multipart());
+let cors = require("cors");
+app.use(cors());
+
+app.use(express.urlencoded());
+
+// Parse JSON bodies (as sent by API clients)
+app.use(express.json());
+
+// app.use(bodyParser.json());
 
 // Create connection
 const db = mysql.createConnection({
@@ -54,8 +59,10 @@ function addMaze(array) {
 }
 
 // Add MazeArray into Table
-app.get('/addmaze', (req, res) => {
-    addMaze("[[0,0,0,'E',0],[1,1,0,0,1],[1,1,0,0,0],[0,0,1,0,0],[0,0,0,0,1]]");
+app.post('/addmaze', (req, res) => {
+    console.log(JSON.stringify(req.body.maze));
+    // addMaze("[[0,0,0,'E',0],[1,1,0,0,1],[1,1,0,0,0],[0,0,1,0,0],[0,0,0,0,1]]");
+    addMaze(req.body.maze);
     res.send('Maze added to database')
 })
 
