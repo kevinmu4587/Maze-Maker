@@ -86,16 +86,20 @@ class MazeSolver {
         var path = [];
         var lhwf = new MazePosn(maze.start.x, maze.start.y);
         while (! maze.finished(lhwf.x, lhwf.y)) {
+            if (path.length >= 10000) {
+                console.log('Couldnt solve maze SORRY!');
+                return [];
+            }
             var posn = [lhwf.x, lhwf.y];
             path.push(posn);
-                for (var i = 0; i < NUM_DIRS; ++i) {
-                    var try_dir = (i + direction + 3) % NUM_DIRS;
-                    if (! maze.is_wall(try_dir, lhwf.x, lhwf.y)) {
-                        lhwf.move(try_dir);
-                        direction = try_dir;
-                        break;
-                    }
+            for (var i = 0; i < NUM_DIRS; ++i) {
+                var try_dir = (i + direction + 3) % NUM_DIRS;
+                if (! maze.is_wall(try_dir, lhwf.x, lhwf.y)) {
+                    lhwf.move(try_dir);
+                    direction = try_dir;
+                    break;
                 }
+            }
         }
         return path; // 2d array of xs and ys
     }
