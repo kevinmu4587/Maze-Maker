@@ -39,7 +39,7 @@ app.get('/createdb', (req, res) => {
 
 // Create Table
 app.get('/createtable', (req, res) => {
-    let sql = 'CREATE TABLE maze(id int AUTO_INCREMENT, mazeArray VARCHAR(255), PRIMARY KEY (id))';
+    let sql = 'CREATE TABLE maze(id int AUTO_INCREMENT, mazeArray TEXT, PRIMARY KEY (id))';
     db.query(sql, (err, result) => {
         if (err) throw err;
         console.log(result);
@@ -47,11 +47,20 @@ app.get('/createtable', (req, res) => {
     })
 })
 
+app.get('/updatetable', (req, res) => {
+    let sql = 'ALTER TABLE maze MODIFY mazeArray TEXT';
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        console.log(result);
+        res.send('Table altered');
+    })
+})
+
 // addMaze Function
 // - Inserts array (string) to the database
 function addMaze(array) {
     let data = {mazeArray : array};
-    let sql = 'INSERT INTO maze SET ?';
+    let sql = "INSERT INTO maze SET ?";
     let query = db.query(sql, data, (err, result) => {
         if (err) throw err;
         console.log(result);
@@ -60,10 +69,10 @@ function addMaze(array) {
 
 // Add MazeArray into Table
 app.post('/addmaze', (req, res) => {
-    console.log(JSON.stringify(req.body.maze));
+    console.log(req.body.maze);
     // addMaze("[[0,0,0,'E',0],[1,1,0,0,1],[1,1,0,0,0],[0,0,1,0,0],[0,0,0,0,1]]");
-    addMaze(req.body.maze);
-    res.send('Maze added to database')
+    addMaze(JSON.stringify(req.body.maze));
+    res.send('Maze added to database');
 })
 
 // getMaze Function
@@ -78,7 +87,7 @@ function getMaze(id) {
 
 // Get MazeArray from Table
 app.get('/getmaze/:id', (req, res) => {
-    let mazeArray = getMaze(1);
+    let mazeArray = getMaze(id);
     res.send(mazeArray);
 })
 
@@ -108,3 +117,4 @@ app.post('/', (req,res) => {
 
 // Export getMaze and addMaze function
 module.exports = { getMaze, addMaze };
+// export { addMaze, getMaze };

@@ -2,9 +2,11 @@ import { Maze, MazeSolver} from "./maze_naive_solve.js";
 
 // Import Maze Functions from app.js
 //var mazeFunction = require('../app');
+// var mazeFunc = require('../app');
+//import { getMaze, addMaze } from "../app.js";
 
 // Get Maze
-// console.log(mazeFunction.getMaze(1));
+// console.log(mazeFunc.getMaze(1));
 
 let app, player;
 
@@ -137,14 +139,6 @@ export function saveMaze() {
         "maze": "jello my friends"  
     });
     console.log("sent " + JSON.stringify(tiles));
-    // var request = new Request('http://localhost:5000/addmaze',{
-    //     form : 'body=' + body,
-    //     method: 'post',
-    //     mode: 'cors'
-    // }); 
-    // fetch(request).then(function(data){
-    //     return data;
-    // });
     fetch('/addmaze', {
         method: 'POST',
         headers: {
@@ -154,13 +148,6 @@ export function saveMaze() {
             "maze": tiles
         })
     });
-    // var xhttp = new XMLHttpRequest();
-    // var sendString = JSON.stringify(tiles);
-    // alert(sendString);
-    // xhttp.open("POST", "/addmaze", true);
-    // xhttp.send(sendString);
-    // console.log("sent maze:");
-    //mazeFunction.addMaze(tiles);
 }
 
 // loadMaze(): loads a maze from the backend
