@@ -20,8 +20,8 @@ const RIGHT = "39";
 const DOWN = "40";
 
 // game constants
-const PIXEL_HEIGHT = 800;
-const PIXEL_WIDTH = 800;
+const PIXEL_HEIGHT = 798;
+const PIXEL_WIDTH = 798;
 const GAME_COLOR = 0xAAAAAA;
 const NUM_TILES_Y = 19;
 const NUM_TILES_X = 19;
@@ -197,6 +197,13 @@ export function saveMaze() {
             "maze": compressMaze()
         })
     });
+}
+
+export function generate() {
+    console.log("generate maze");
+    let maze = new Maze();
+    tiles = maze.generate_random_maze(19, 19);
+    render();
 }
 
 // loadMaze(): loads a maze from the backend

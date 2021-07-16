@@ -15,11 +15,8 @@
 <body>
     <button type="button" id="save">Save</button>
     <button type="button" id="solve">Solve</button>
-    <!-- <button type="button" id="first" class="btn btn-dark">Empty</button>
-    <button type="button" id="second" class="btn btn-dark">Empty</button>
-    <button type="button" id="third" class="btn btn-dark">Empty</button>
-    <button type="button" id="fourth" class="btn btn-dark">Empty</button>
-    <button type="button" id="fifth" class="btn btn-dark">Empty</button> -->
+    <button type="button" id="generate">Generate Random Maze</button>
+
 
     <form>
         <p>Load a maze:</p>
@@ -45,16 +42,11 @@
       </form>
 
     <script type="module">
-        import { saveMaze, solveMaze} from '/js/main.js'
+        import { saveMaze, solveMaze, generate} from '/js/main.js'
     
         document.querySelector('#save').addEventListener('click', saveMaze)
-        // document.querySelector('#load').addEventListener('click', loadMaze)
         document.querySelector('#solve').addEventListener('click', solveMaze)
-        // document.querySelector('#first').addEventListener('click', getMaze)
-        // document.querySelector('#second').addEventListener('click', getMaze(1))
-        // document.querySelector('#third').addEventListener('click', getMaze(2))
-        // document.querySelector('#fourth').addEventListener('click', getMaze(3))
-        // document.querySelector('#fifth').addEventListener('click', getMaze(4))
+        document.querySelector('#generate').addEventListener('click', generate)
     </script>
 </body>
 </html>
