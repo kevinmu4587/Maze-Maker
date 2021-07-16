@@ -75,19 +75,9 @@ app.post('/addmaze', (req, res) => {
     res.send('Maze added to database');
 })
 
-// getMaze Function
-function getMaze(id) {
-//     let sql = `SELECT mazeArray FROM maze WHERE id = ${id}`;
-//     let query = db.query(sql, (err, result) => {
-//         if (err) throw err;
-//         //console.log(result[0].mazeArray);
-//         return result[0].mazeArray;
-//     });
-}
-
 // Get MazeArray from Table
 app.post('/getmaze', (req, res) => {
-    let id = 40;
+    let id = req.body.id;
     console.log("we got a get request of id " + id)
     let sql = `SELECT mazeArray FROM maze WHERE id = ${id}`;
     let query = db.query(sql, (err, result) => {
