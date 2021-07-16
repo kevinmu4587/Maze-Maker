@@ -103,6 +103,17 @@ app.post('/getmaze', (req, res) => {
     //res.send({message: msg});
 })
 
+app.get('/getID', (req, res) => {
+    let sql = 'SELECT id FROM maze LIMIT 5';
+    let query = db.query(sql, (err, result) => {
+        if (err) throw err;
+        var n = result.length;
+        var arr = [];
+        result.forEach(element => arr.push(element.id));
+        res.send({"idArray": arr, "idCount": n});
+    })
+})
+
 app.use(express.static(__dirname + '/'));
 app.engine('html', require('ejs').renderFile);
 
