@@ -89,12 +89,12 @@ class Maze {
                 throw 'Invalid direction: at is_wall.';
         }
     }
-    get_neighbours(x, y) {
+    get_neighbours(x, y, delta = 1) {
         var neighbours = [
-            [x + 1, y],
-            [x - 1, y],
-            [x, y + 1],
-            [x, y - 1]
+            [x + delta, y],
+            [x - delta, y],
+            [x, y + delta],
+            [x, y - delta]
         ];
         neighbours = neighbours.filter(n => n[0] >= 0 && n[1] >= 0 &&
              n[0] < this.maze_array[0].length && n[1] < this.maze_array.length &&
@@ -107,6 +107,63 @@ class Maze {
             return true;
         }
         return false;
+    }
+    getRandomArbitrary(min, max) {
+        return Math.floor(Math.random() * (max - min) + min);
+    }
+    unvisited_neighbours(current_cell, rmaze_array) {
+        var x = current_cell[0];
+        var y = current_cell[1];
+        var neighbours = [
+            [x + 2, y],
+            [x - 2, y],
+            [x, y + 2],
+            [x, y - 2]
+        ];
+        neighbours = neighbours.filter(n => n[0] >= 0 && n[1] >= 0 &&
+             n[0] < rmaze_array[0].length && n[1] < rmaze_array.length &&
+              rmaze_array[n[1]][n[0]] === 1);
+        return neighbours;
+    }
+    generate_random_maze_unwrapped(rmaze_array, x, y) {//array of all 1s, x and y are dimensions, at least 5
+        //main algo
+        var visiting_stack = [];
+        rmaze_array[1][1] = 0;
+        var current_cell = [1, 1];
+        visiting_stack.push(current_cell);
+        while (visiting_stack.length > 0) {
+            current_cell = visiting_stack.pop();
+            var neighbours = this.unvisited_neighbours(current_cell, rmaze_array);
+            if (neighbours.length > 0) {
+                visiting_stack.push(current_cell);
+                var rand_index = this.getRandomArbitrary(0, neighbours.length);
+                var n = neighbours[rand_index];
+                rmaze_array[(current_cell[1] + n[1])/ 2][(current_cell[0] + n[0])/ 2] = 0;
+                rmaze_array[n[1]][n[0]] = 0;
+                visiting_stack.push(n);
+            }
+        }
+        //at end
+        rmaze_array[1][1] = 'S';
+        var end_index_x = (x % 2 == 0 ? x - 3: x - 2);
+        var end_index_y = (y % 2 == 0 ? y - 3: y - 2);
+        rmaze_array[end_index_y][end_index_x] = 'E';
+        return rmaze_array;
+    }
+    generate_random_maze(x = 19, y = 19) { //x and y represent maze size
+        // this is a wrapper
+        // make sure sizes at least 5 
+        var random_maze = [];
+        for (var w = 0; w < y; ++w) { // fill maze with walls.
+            var row = new Array(x).fill(1);
+            random_maze.push(row);
+        }
+        if (x < 5 || y < 5) {
+            console.log('Maze wasnt generated bc dimensions are too small');
+            return random_maze;
+        } else {
+            return this.generate_random_maze_unwrapped(random_maze, x, y);
+        }
     }
 }
 
@@ -207,28 +264,5 @@ class MazeSolver {
         return ret_maze_array;
     }
 }
-
-const eg1 =
-[
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
-    [1, 'S', 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1], 
-    [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1], 
-    [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1], 
-    [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1], 
-    [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1], 
-    [1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1], 
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1], 
-    [1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1], 
-    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 'E', 1], 
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-];
-
-const eg2 = [
-    [1, 'S', 0, 0, 1],
-    [1, 1, 0, 0, 1],
-    [1, 1, 0, 0, 0],
-    [0, 0, 1, 0, 0],
-    [0, 0, 0, 'E', 1]
-];
 
 export { Maze, MazeSolver};
