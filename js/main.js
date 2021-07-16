@@ -70,9 +70,25 @@ let solved_maze;
 let solved_tiles = [];
 let walls = [];
 
+function clearTiles() {
+    for (var y = 0; y < NUM_TILES_Y; ++y) {
+        for (var x = 0; x < NUM_TILES_X; ++x) {
+            if (walls[y][x] != null) {
+                app.stage.removeChild(walls[y][x]);
+            }
+        }
+    }
+}
+
 // render(): renders the current board and player
 //           uses global variable tiles[][]
 function render() {
+    for(let i = 0; i < NUM_TILES_Y; i++) {
+        walls[i] = [];
+        for(let j = 0; j < NUM_TILES_X; j++) {
+            walls[i][j] = null;
+        }
+    }
     for (var i = 0; i < NUM_TILES_Y; i++) {
         for (var j = 0; j < NUM_TILES_X; j++) {
             if (tiles[i][j] == TILE_OPEN) {
@@ -87,12 +103,12 @@ function render() {
                 app.stage.addChild(walls[i][j]);
             } else if (tiles[i][j] == TILE_FINISH) {
                 // set the finish
-                let finish = new PIXI.Sprite.from("images/finish.png");
-                finish.x = j * TILE_WIDTH;
-                finish.y = i * TILE_HEIGHT;
-                finish.width = TILE_WIDTH;
-                finish.height = TILE_HEIGHT;
-                app.stage.addChild(finish);
+                walls[i][j] = new PIXI.Sprite.from("images/finish.png");
+                walls[i][j].x = j * TILE_WIDTH;
+                walls[i][j].y = i * TILE_HEIGHT;
+                walls[i][j].width = TILE_WIDTH;
+                walls[i][j].height = TILE_HEIGHT;
+                app.stage.addChild(walls[i][j]);
                 //fBox = finish.getBounds();
             } else if (tiles[i][j] == TILE_START) {
                 // set the player
@@ -101,6 +117,7 @@ function render() {
                 player.y = i * TILE_HEIGHT; // PIXEL_HEIGHT - 2.5 * TILE_WIDTH;
                 player.width = TILE_WIDTH;
                 player.height = TILE_HEIGHT;
+                walls[i][j] = player;
                 app.stage.addChild(player);
             }
         }
@@ -123,7 +140,6 @@ function render() {
     playButton.mousedown = buttonClick.bind(undefined, "play");
     app.stage.addChild(drawButton);
     app.stage.addChild(playButton);
-    app.renderer.plugins.interaction.on('pointerup', onClick);
 }
 
 // onload(): load the PIXI game and render the maze
@@ -139,12 +155,7 @@ window.onload = function () {
     // keyboard event listeners
     window.addEventListener("keyup", keysUp);
     window.addEventListener("keydown", keysDown);
-    for(let i = 0; i < NUM_TILES_Y; i++) {
-        walls[i] = [];
-        for(let j = 0; j < NUM_TILES_X; j++) {
-            walls[i][j] = null;
-        }
-    }
+    app.renderer.plugins.interaction.on('pointerup', onClick);
     render();
 }
 
@@ -159,10 +170,10 @@ function compressMaze() {
 }
 
 function decompress(compressed) {
-    var count = 2;
+    var count = 11;
     for (var y = 0; y < NUM_TILES_Y; ++y) {
         for (var x = 0; x < NUM_TILES_X; ++x) {
-            c = compressed.charAt(count);
+            var c = compressed.charAt(count);
             if (c == '0' || c == '1') {
                 tiles[y][x] = c - '0';
             } else {
@@ -190,10 +201,49 @@ export function saveMaze() {
 }
 
 // loadMaze(): loads a maze from the backend
-export function loadMaze() {
-    location.replace("../load.html");
-    console.log("load maze:");
-}
+// export function loadMaze() {
+//     location.replace("../load.html");
+//     console.log("load maze:");
+// }
+
+var form = document.querySelector("form");
+
+form.addEventListener("submit", function(event) {
+    var data = new FormData(form);
+    var output = "";
+    for (const entry of data) {
+        output = output + entry[1] + "\r";
+    };
+    console.log(output);
+    event.preventDefault();
+
+    console.log("we be getting a maze now." + output);
+    var url = '/getmaze';
+    fetch(url,
+        {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "id": 46 
+        })
+    }).then((response) => {
+        if (response.ok) {
+            return response.json();
+        }
+    })
+    .then((data) => {
+        if (data) {
+            console.log("we got back: " + JSON.stringify(data));
+            clearTiles();
+            decompress(JSON.stringify(data));
+            console.log(tiles)
+            render();
+        }
+    });
+}, false);
 
 // solveMaze(): updates maze to show the pathway
 export function solveMaze() {
@@ -335,7 +385,6 @@ function onClick (event) {
             walls[index_y][index_x].x = index_x * TILE_WIDTH;
             walls[index_y][index_x].width = TILE_WIDTH;
             walls[index_y][index_x].height = TILE_HEIGHT;
-            // walls[index_x][index_y] = wall;
             app.stage.addChild(walls[index_y][index_x]);
         } else if (state == "edit" && tiles[index_y][index_x] == TILE_WALL) {
             console.log("removing wall at ", index_x, index_y);
