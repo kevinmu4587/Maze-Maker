@@ -69,6 +69,28 @@ let solved_maze;
 let solved_tiles = [];
 let walls = [];
 
+console.log("welcome to load maze");
+let ids = {};
+// request the ids from the backend
+fetch('/getID',
+    {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+}).then((response) => {
+    if (response.ok) {
+        return response.json();
+    }
+})
+.then((data) => {
+    if (data) {
+        ids = data.idArray;
+        console.log(ids)
+    }
+});
+
 function clearTiles() {
     for (var y = 0; y < NUM_TILES_Y; ++y) {
         for (var x = 0; x < NUM_TILES_X; ++x) {
@@ -145,7 +167,7 @@ function render() {
 window.onload = function () {
     app = new PIXI.Application(
         {
-            width: PIXEL_WIDTH + 300,
+            width: PIXEL_WIDTH + 200,
             height: PIXEL_HEIGHT,
             backgroundColor: GAME_COLOR
         }
@@ -216,11 +238,11 @@ var form = document.querySelector("form");
 
 form.addEventListener("submit", function(event) {
     var data = new FormData(form);
-    var output = "";
+    var output;
     for (const entry of data) {
-        output = output + entry[1] + "\r";
+        output = entry[1];
     };
-    console.log(output);
+    console.log(5 - output);
     event.preventDefault();
 
     console.log("we be getting a maze now." + output);
@@ -233,7 +255,7 @@ form.addEventListener("submit", function(event) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            "id": 46 
+            "id": ids[output - 1]
         })
     }).then((response) => {
         if (response.ok) {
