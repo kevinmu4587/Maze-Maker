@@ -94,7 +94,7 @@ app.post('/getmaze', (req, res) => {
 })
 
 app.get('/getID', (req, res) => {
-    let sql = 'SELECT id FROM maze LIMIT 5';
+    let sql = 'SELECT id FROM maze ORDER BY id DESC LIMIT 5';
     let query = db.query(sql, (err, result) => {
         if (err) throw err;
         var n = result.length;
