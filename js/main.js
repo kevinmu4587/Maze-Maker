@@ -68,6 +68,7 @@ let solved = false;
 let solved_maze;
 let solved_tiles = [];
 let walls = [];
+let win;
 
 console.log("welcome to load maze");
 let ids = {};
@@ -99,6 +100,8 @@ function clearTiles() {
             }
         }
     }
+    app.stage.removeChild(player);
+    app.stage.removeChild(win);
 }
 
 // render(): renders the current board and player
@@ -225,14 +228,10 @@ export function generate() {
     console.log("generate maze");
     let maze = new Maze();
     tiles = maze.generate_random_maze(19, 19);
+    if(solved) { solveMaze() }
+    clearTiles();
     render();
 }
-
-// loadMaze(): loads a maze from the backend
-// export function loadMaze() {
-//     location.replace("../load.html");
-//     console.log("load maze:");
-// }
 
 var form = document.querySelector("form");
 
@@ -377,7 +376,7 @@ function getTile(px, py) {
 
 // victory(): displays a win message to the screen
 function victory() {
-    let win = new PIXI.Sprite.from("images/winMsg.png");
+    win = new PIXI.Sprite.from("images/winMsg.png");
     win.x = 0;
     win.y = 0;
     win.width = PIXEL_WIDTH;
