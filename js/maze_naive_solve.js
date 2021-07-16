@@ -29,6 +29,25 @@ class MazePosn {
     }
 }
 
+class Queue {
+    constructor() {
+        this.items = [];
+    }
+    is_empty() {
+        return this.items.length == 0;
+    }
+    enqueue(i) {
+        this.items.push(i);
+    }
+    dequeue() {
+        if (this.is_empty()) {
+            throw "Queue Underflow";
+        } else {
+            return this.items.shift();
+        }
+    }
+}
+
 class Maze {
     constructor() {
         this.maze_array = []; //stored as 0s (empty), 1s (walls) and S/E
@@ -55,20 +74,32 @@ class Maze {
     is_wall(direction, x, y) { 
         switch(direction) { 
             case UP_DIR:
-                if (y == 0) { return true; }
+                if (y <= 0) { return true; }
                 return this.maze_array[y - 1][x] === 1;
             case RIGHT_DIR:
-                if (x == this.maze_array[y].length - 1) { return true; }
+                if (x >= this.maze_array[y].length - 1) { return true; }
                 return this.maze_array[y][x + 1] === 1;
             case DOWN_DIR:
-                if (y == this.maze_array.length - 1) { return true; }
+                if (y >= this.maze_array.length - 1) { return true; }
                 return this.maze_array[y + 1][x] === 1;
             case LEFT_DIR:
-                if (x == 0) { return true; }
+                if (x <= 0) { return true; }
                 return this.maze_array[y][x - 1] === 1;
             default:
                 throw 'Invalid direction: at is_wall.';
         }
+    }
+    get_neighbours(x, y) {
+        var neighbours = [
+            [x + 1, y],
+            [x - 1, y],
+            [x, y + 1],
+            [x, y - 1]
+        ];
+        neighbours = neighbours.filter(n => n[0] >= 0 && n[1] >= 0 &&
+             n[0] < this.maze_array[0].length && n[1] < this.maze_array.length &&
+              this.maze_array[n[1]][n[0]] !== 1);
+        return neighbours;
     }
     finished(x, y) {
         if (x == this.end.x && y == this.end.y) {
@@ -123,6 +154,56 @@ class MazeSolver {
             ret_maze_array[solved_path[i][1]][solved_path[i][0]] = 2;
         }
         ret_maze_array[maze.start.y][maze.start.x] = 'S';
+        return ret_maze_array;
+    }
+    weird_index(n, explored) {
+        for (var i = 0; i < explored.length; ++i) {
+            var e = explored[i];
+            if (e[0][0] == n[0] && e[0][1] == n[1]) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    bfsearch_unwrapped(maze) {
+        var q = new Queue(); //queue of 2 elem arrays
+        var explored = []; //3d array???
+        var root = [[maze.start.x, maze.start.y], null];
+        explored.push(root);
+        q.enqueue(root[0]);
+        while (! q.is_empty()) {
+            var v = q.dequeue();
+            if (maze.finished(v[0], v[1])) {
+                console.log('bfsearch completed!');
+                var path = [];
+                while (v !== null) {
+                    path.push(v);
+                    v = explored[this.weird_index(v, explored)][1];
+                }
+                return path;
+            } else {
+                var neighbours = maze.get_neighbours(v[0], v[1]);
+                for (var k = 0; k < neighbours.length; ++k) {
+                    var n = neighbours[k];
+                    if (this.weird_index(n, explored) === -1) {
+                        var child = [n, v];
+                        explored.push(child);
+                        q.enqueue(n);
+                    }
+                }
+            }
+        }
+        console.log('bfsearch failed');
+        return [];
+    }
+    bfsearch(maze) {
+        var solved_path = this.bfsearch_unwrapped(maze); // 2d array of path
+        var ret_maze_array = maze.get_maze_array();
+        for (var i = 0; i < solved_path.length; ++i) {
+            ret_maze_array[solved_path[i][1]][solved_path[i][0]] = 2;
+        }
+        ret_maze_array[maze.start.y][maze.start.x] = 'S';
+        ret_maze_array[maze.end.y][maze.end.x] = 'E';
         return ret_maze_array;
     }
 }
