@@ -13,40 +13,52 @@
     <script type="module" src="js/main.js"></script>
 </head>
 <body>
-    <button type="button" id="save">Save</button>
-    <button type="button" id="solve">Solve</button>
-    <button type="button" id="generate">Generate Random Maze</button>
-
-
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">Maze Maker</a>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><button type="button" id="save">Save</button></li>
+          <li class="nav-item"><button type="button" id="solve">Solve</button></li>
+          <li class="nav-item"><button type="button" id="generate">Generate Random Maze</button></li>
+        </ul>
+    </div>
+  </nav>
+  <div class="row d-flex flex-row">
     <form>
+      <div class="form-check form-check-inline">
         <p>Load a maze:</p>
-        <div>
-          <input type="radio" id="first" name="maze" value="1">
-          <label for="first" padding="10px">Slot 1</label>
-      
-          <input type="radio" id="second" name="maze" value="2">
-          <label for="second">Slot 2</label>
-      
-          <input type="radio" id="third" name="maze" value="3">
-          <label for="third">Slot 3</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input type="radio" id="first" name="maze" value="1">
+        <label for="first" padding="10px">Slot 1</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input type="radio" id="second" name="maze" value="2">
+        <label for="second">Slot 2</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input type="radio" id="third" name="maze" value="3">
+        <label for="third">Slot 3</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input type="radio" id="fourth" name="maze" value="4">
+        <label for="fourth">Slot 4</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input type="radio" id="fifth" name="maze" value="5">
+        <label for="fifth">Slot 5</label>
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
 
-          <input type="radio" id="fourth" name="maze" value="4">
-          <label for="fourth">Slot 4</label>
+  <script type="module">
+    import { saveMaze, solveMaze, generate} from '/js/main.js'
 
-          <input type="radio" id="fifth" name="maze" value="5">
-          <label for="fifth">Slot 5</label>
-        </div>
-        <div>
-          <button type="submit">Submit</button>
-        </div>
-      </form>
-
-    <script type="module">
-        import { saveMaze, solveMaze, generate} from '/js/main.js'
-    
-        document.querySelector('#save').addEventListener('click', saveMaze)
-        document.querySelector('#solve').addEventListener('click', solveMaze)
-        document.querySelector('#generate').addEventListener('click', generate)
-    </script>
+    document.querySelector('#save').addEventListener('click', saveMaze)
+    document.querySelector('#solve').addEventListener('click', solveMaze)
+    document.querySelector('#generate').addEventListener('click', generate)
+  </script>
 </body>
 </html>
