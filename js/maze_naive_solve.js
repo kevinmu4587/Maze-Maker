@@ -150,9 +150,8 @@ class Maze {
         rmaze_array[end_index_y][end_index_x] = 'E';
         return rmaze_array;
     }
-    generate_random_maze(x = 19, y = 19) { //x and y represent maze size
-        // this is a wrapper
-        // make sure sizes at least 5 
+    generate_random_maze(x = 19, y = 19) { //x and y represent maze size, odd squares work best
+        // returns maze array of newly generated maze
         var random_maze = [];
         for (var w = 0; w < y; ++w) { // fill maze with walls.
             var row = new Array(x).fill(1);
