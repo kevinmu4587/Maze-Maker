@@ -136,7 +136,7 @@ function render() {
                 //fBox = finish.getBounds();
             } else if (tiles[i][j] == TILE_START) {
                 // set the player
-                player = new PIXI.Sprite.from("images/player.png");
+                player = new PIXI.Sprite.from("images/stick_left_transparent.png");
                 player.x = j * TILE_WIDTH; // 2 * TILE_WIDTH + TILE_WIDTH / 2;
                 player.y = i * TILE_HEIGHT; // PIXEL_HEIGHT - 2.5 * TILE_WIDTH;
                 player.width = TILE_WIDTH;
@@ -306,13 +306,32 @@ export function solveMaze() {
     let y = player.y;
     console.log(x, y);
     app.stage.removeChild(player);
-    player = new PIXI.Sprite.from("images/player.png");
+    player = new PIXI.Sprite.from("images/stick_left_transparent.png");
     player.x = x; 
     player.y = y; 
     player.width = TILE_WIDTH;
     player.height = TILE_HEIGHT;
     app.stage.addChild(player);
     solved = true;
+}
+
+let texture = 0;
+// cycles through ""animation""
+function cycleTexture(x,y) {
+    app.stage.removeChild(player);
+    if (texture % 2 == 1) {
+        player = new PIXI.Sprite.from("images/stick_mid_transparent.png");
+    } else if (texture % 4 == 0) {
+        player = new PIXI.Sprite.from("images/stick_left_transparent.png");
+    } else {
+        player = new PIXI.Sprite.from("images/stick_right_transparent.png");
+    }
+    player.x = x; 
+    player.y = y; 
+    player.width = TILE_WIDTH;
+    player.height = TILE_HEIGHT;
+    app.stage.addChild(player);
+    ++texture;
 }
 
 // gameplay functions below -------------------------------------------------------
@@ -332,6 +351,7 @@ function keysUp(e) {
     } else if (key == DOWN || key == S) {
         player.y += collision(player.x, player.y + TILE_WIDTH + 1);
     }
+    cycleTexture(player.x, player.y);
 }
 
 // keysdown(e): called whenever a key e is pressed down. used to prevent scrolling during movement
