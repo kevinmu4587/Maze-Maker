@@ -60,5 +60,14 @@
     document.querySelector('#solve').addEventListener('click', solveMaze)
     document.querySelector('#generate').addEventListener('click', generate)
   </script>
+
+  <script type="text/template">
+  <div>
+    Hello!
+  </div>
+  <script type="text/javascript">  <!-- Noncompliant -->
+    alert("Hi!");
+  </script>
+</script>
 </body>
 </html>

@@ -194,11 +194,11 @@ function compressMaze() {
 }
 
 function decompress(compressed) {
-    var count = 11;
+    let count = 11;
     for (var y = 0; y < NUM_TILES_Y; ++y) {
         for (var x = 0; x < NUM_TILES_X; ++x) {
             var c = compressed.charAt(count);
-            if (c == '0' || c == '1') {
+            if (c === '0' || c == '1') {
                 tiles[y][x] = c - '0';
             } else {
                 tiles[y][x] = c;
@@ -240,7 +240,7 @@ form.addEventListener("submit", function(event) {
     var output;
     for (const entry of data) {
         output = entry[1];
-    };
+    }
     console.log(5 - output);
     event.preventDefault();
 
