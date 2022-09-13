@@ -15,4 +15,8 @@ Things needed to install:
 4. Run using `node app.js`. The app is run on port 5000.
 
 ### Screenshots
+Home screen with the maze editor (showing a randomly generated maze):  
+<img src="home.jpg"  width=60% height=60%>  
 
+Maze solving algorithm on a custom maze:  
+<img src="solve.jpg"  width=60% height=60%>
